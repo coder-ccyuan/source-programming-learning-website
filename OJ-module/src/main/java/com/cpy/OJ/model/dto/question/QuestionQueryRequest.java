@@ -2,7 +2,7 @@ package com.cpy.OJ.model.dto.question;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
-import com.cpy.OJ.common.PageRequest;
+import com.cpy.common.PageRequest;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 

@@ -1,20 +1,21 @@
 package com.cpy.OJ.controller;
 
 import cn.hutool.core.io.FileUtil;
-import com.cpy.OJ.common.BaseResponse;
-import com.cpy.OJ.common.ErrorCode;
-import com.cpy.OJ.common.ResultUtils;
-import com.cpy.OJ.constant.FileConstant;
-import com.cpy.OJ.exception.BusinessException;
+
 import com.cpy.OJ.manager.CosManager;
 import com.cpy.OJ.model.dto.file.UploadFileRequest;
 import com.cpy.OJ.model.enums.FileUploadBizEnum;
-import com.cpy.OJ.service.UserService;
+
 import java.io.File;
 import java.util.Arrays;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.cpy.common.BaseResponse;
+import com.cpy.common.ErrorCode;
+import com.cpy.common.ResultUtils;
+import com.cpy.constant.FileConstant;
+import com.cpy.exception.BusinessException;
 import com.cpy.model.entity.User;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -51,7 +52,7 @@ public class FileController {
      */
     @PostMapping("/upload")
     public BaseResponse<String> uploadFile(@RequestPart("file") MultipartFile multipartFile,
-            UploadFileRequest uploadFileRequest, HttpServletRequest request) {
+                                           UploadFileRequest uploadFileRequest, HttpServletRequest request) {
         String biz = uploadFileRequest.getBiz();
         FileUploadBizEnum fileUploadBizEnum = FileUploadBizEnum.getEnumByValue(biz);
         if (fileUploadBizEnum == null) {

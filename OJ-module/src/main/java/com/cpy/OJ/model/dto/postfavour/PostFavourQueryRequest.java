@@ -1,6 +1,6 @@
 package com.cpy.OJ.model.dto.postfavour;
 
-import com.cpy.OJ.common.PageRequest;
+import com.cpy.common.PageRequest;
 import com.cpy.OJ.model.dto.post.PostQueryRequest;
 import java.io.Serializable;
 import lombok.Data;

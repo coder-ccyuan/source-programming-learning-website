@@ -3,10 +3,8 @@ package com.yupi.springbootinit.service;
 import javax.annotation.Resource;
 
 import cn.hutool.core.lang.UUID;
-import com.cpy.OJ.service.UserService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 
 /**
  * 用户服务测试

@@ -26,6 +26,11 @@ spring:
     username: root
     password: 123456
     url: jdbc:mysql://localhost:3306/source_website?rewriteBatchedStatements=true
+  cloud:
+    nacos:
+      server-addr: localhost:8848
+  application:
+    name: api-service
 mybatis-plus:
   configuration:
     map-underscore-to-camel-case: false

@@ -1,13 +1,12 @@
 package com.cpy.OJ.config;
 
-import com.cpy.OJ.common.ErrorCode;
-import com.cpy.OJ.exception.BusinessException;
 import com.cpy.OJ.utils.RedisUtils;
+import com.cpy.exception.BusinessException;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-
+import com.cpy.common.ErrorCode;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 

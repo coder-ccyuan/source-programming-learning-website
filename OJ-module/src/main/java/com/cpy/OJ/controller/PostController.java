@@ -1,16 +1,16 @@
 package com.cpy.OJ.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.cpy.annotation.AuthCheck;
+import com.cpy.common.BaseResponse;
+import com.cpy.common.DeleteRequest;
+import com.cpy.common.ErrorCode;
+import com.cpy.common.ResultUtils;
+import com.cpy.constant.UserConstant;
+import com.cpy.exception.BusinessException;
+import com.cpy.exception.ThrowUtils;
 import com.cpy.model.entity.User;
 import com.google.gson.Gson;
-import com.cpy.OJ.annotation.AuthCheck;
-import com.cpy.OJ.common.BaseResponse;
-import com.cpy.OJ.common.DeleteRequest;
-import com.cpy.OJ.common.ErrorCode;
-import com.cpy.OJ.common.ResultUtils;
-import com.cpy.OJ.constant.UserConstant;
-import com.cpy.OJ.exception.BusinessException;
-import com.cpy.OJ.exception.ThrowUtils;
 import com.cpy.OJ.model.dto.post.PostAddRequest;
 import com.cpy.OJ.model.dto.post.PostEditRequest;
 import com.cpy.OJ.model.dto.post.PostQueryRequest;
@@ -18,7 +18,7 @@ import com.cpy.OJ.model.dto.post.PostUpdateRequest;
 import com.cpy.OJ.model.entity.Post;
 import com.cpy.OJ.model.vo.PostVO;
 import com.cpy.OJ.service.PostService;
-import com.cpy.OJ.service.UserService;
+
 import java.util.List;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;

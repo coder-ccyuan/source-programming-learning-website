@@ -1,15 +1,16 @@
 package com.cpy.OJ.controller;
 
-import com.cpy.OJ.common.BaseResponse;
-import com.cpy.OJ.common.ErrorCode;
-import com.cpy.OJ.common.ResultUtils;
-import com.cpy.OJ.exception.BusinessException;
+
 import com.cpy.OJ.model.dto.postthumb.PostThumbAddRequest;
 import com.cpy.OJ.service.PostThumbService;
-import com.cpy.OJ.service.UserService;
+
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.cpy.common.BaseResponse;
+import com.cpy.common.ErrorCode;
+import com.cpy.common.ResultUtils;
+import com.cpy.exception.BusinessException;
 import com.cpy.model.entity.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -43,7 +44,7 @@ public class PostThumbController {
      */
     @PostMapping("/")
     public BaseResponse<Integer> doThumb(@RequestBody PostThumbAddRequest postThumbAddRequest,
-            HttpServletRequest request) {
+                                         HttpServletRequest request) {
         if (postThumbAddRequest == null || postThumbAddRequest.getPostId() <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }

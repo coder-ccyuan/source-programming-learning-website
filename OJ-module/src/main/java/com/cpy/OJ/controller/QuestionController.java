@@ -1,19 +1,18 @@
 package com.cpy.OJ.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.cpy.OJ.annotation.AuthCheck;
-import com.cpy.OJ.common.BaseResponse;
-import com.cpy.OJ.common.DeleteRequest;
-import com.cpy.OJ.common.ErrorCode;
-import com.cpy.OJ.common.ResultUtils;
-import com.cpy.OJ.constant.UserConstant;
-import com.cpy.OJ.exception.BusinessException;
-import com.cpy.OJ.exception.ThrowUtils;
 import com.cpy.OJ.model.dto.question.*;
 import com.cpy.OJ.model.entity.Question;
 import com.cpy.OJ.model.vo.QuestionVO;
 import com.cpy.OJ.service.QuestionService;
-import com.cpy.OJ.service.UserService;
+import com.cpy.annotation.AuthCheck;
+import com.cpy.common.BaseResponse;
+import com.cpy.common.DeleteRequest;
+import com.cpy.common.ErrorCode;
+import com.cpy.common.ResultUtils;
+import com.cpy.constant.UserConstant;
+import com.cpy.exception.BusinessException;
+import com.cpy.exception.ThrowUtils;
 import com.cpy.model.entity.User;
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;

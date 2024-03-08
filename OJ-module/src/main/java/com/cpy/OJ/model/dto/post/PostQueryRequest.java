@@ -1,6 +1,6 @@
 package com.cpy.OJ.model.dto.post;
 
-import com.cpy.OJ.common.PageRequest;
+import com.cpy.common.PageRequest;
 import java.io.Serializable;
 import java.util.List;
 import lombok.Data;

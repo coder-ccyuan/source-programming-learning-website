@@ -1,6 +1,6 @@
 package com.cpy.OJ.model.dto.questionSubmit;
 
-import com.cpy.OJ.common.PageRequest;
+import com.cpy.common.PageRequest;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
