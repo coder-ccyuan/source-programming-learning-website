@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cpy.api_system.dao.mapper.InterfaceInformationMapper">
+
+    <resultMap id="BaseResultMap" type="com.cpy.api_system.model.entity.InterfaceInformation">
+        <id property="id" column="id" jdbcType="BIGINT"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
+        <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
+        <result property="requestHead" column="requestHead" jdbcType="VARCHAR"/>
+        <result property="responseHead" column="responseHead" jdbcType="VARCHAR"/>
+        <result property="url" column="url" jdbcType="VARCHAR"/>
+        <result property="status" column="status" jdbcType="INTEGER"/>
+        <result property="isDelete" column="isDelete" jdbcType="INTEGER"/>
+        <result property="userId" column="userId" jdbcType="BIGINT"/>
+        <result property="method" column="method" jdbcType="VARCHAR"/>
+        <result property="paramName" column="paramName" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,name,create_time,
+        update_time,request_head,response_head,
+        url,status,is_delete,
+        user_id,method
+    </sql>
+</mapper>

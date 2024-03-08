@@ -1,0 +1,8 @@
+server:
+  port: 8091
+spring:
+  application:
+    name: OJ-code-sandbox
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
