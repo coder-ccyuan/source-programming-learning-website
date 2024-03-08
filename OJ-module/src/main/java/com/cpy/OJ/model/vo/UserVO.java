@@ -44,5 +44,9 @@ public class UserVO implements Serializable {
      */
     private Date createTime;
 
+    private String accessKey;
+
+    private String secretKey;
+
     private static final long serialVersionUID = 1L;
 }

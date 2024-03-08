@@ -17,6 +17,9 @@
         <result property="userId" column="userId" jdbcType="BIGINT"/>
         <result property="method" column="method" jdbcType="VARCHAR"/>
         <result property="paramName" column="paramName" jdbcType="VARCHAR"/>
+        <result property="introduce" column="introduce" jdbcType="VARCHAR"/>
+        <result property="sdkURL" column="sdkURL" jdbcType="VARCHAR"/>
+        <result property="maven" column="maven" jdbcType="VARCHAR"/>
     </resultMap>
 
     <sql id="Base_Column_List">

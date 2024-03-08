@@ -67,6 +67,20 @@ public class InterfaceInformationAddRequest  implements Serializable {
      *
      */
     private String method;
+    /**
+     * 接口介绍
+     */
+    private String introduce;
+
+    /**
+     * sdk的jar包地址
+     */
+    private String sdkURL;
+
+    /**
+     * maven依赖
+     */
+    private String maven;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

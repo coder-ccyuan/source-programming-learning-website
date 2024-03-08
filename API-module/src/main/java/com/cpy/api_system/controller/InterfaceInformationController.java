@@ -1,5 +1,6 @@
 package com.cpy.api_system.controller;
 
+import cn.hutool.core.io.FileUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.cpy.api_system.Exception.CommonException;
 import com.cpy.api_system.common.BaseResponse;
@@ -12,12 +13,18 @@ import com.cpy.api_system.utils.IsUser;
 import com.cpy.api_system.utils.ResultUtils;
 import com.cpy.api_system.utils.VerifyUtils;
 import com.cpy.model.entity.User;
+import com.sun.deploy.net.URLEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import java.util.UUID;
 
 import static com.cpy.api_system.constants.UserConstant.USER_LOGIN_STATE;
 
@@ -66,7 +73,7 @@ public class InterfaceInformationController {
         if (!b){
             throw new CommonException(StatuesCode.PARAMS_ERROR);
              }
-        return ResultUtils.success(b);
+        return ResultUtils.success(true);
     }
     @GetMapping("/query/list")
     public BaseResponse<List<InterfaceInformation>> query( String name,String method, HttpServletRequest request){
@@ -124,12 +131,11 @@ public class InterfaceInformationController {
         if (!IsUser.isAdmin(request)) {
             throw new CommonException(StatuesCode.NO_AUTH);
         }
-
         boolean b = interfaceInformationService.updateById(interfaceInformation);
         if (!b){
             throw new CommonException(StatuesCode.PARAMS_ERROR,"参数异常");
         }
-        return ResultUtils.success(b);
+        return ResultUtils.success(true);
     }
     @PostMapping("/online")
     public BaseResponse<Boolean> online(@RequestBody InterfaceInformationOlineRequest olineRequest, HttpServletRequest request) throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
@@ -251,7 +257,75 @@ public class InterfaceInformationController {
         if (responseResult==null){
             throw new CommonException(StatuesCode.PARAMS_ERROR);
         }*/
+    }
+    @PostMapping("/uploadSDK")
+    public BaseResponse<Boolean> upLoadSDK(InterfaceInformationUploadSDKFile uploadSDKFile,HttpServletRequest request){
+        if (uploadSDKFile==null||uploadSDKFile.getFile().isEmpty()){
+            throw new CommonException(StatuesCode.PARAMS_ERROR,"文件为空");
+        }
+        boolean admin = IsUser.isAdmin(request);
+        if (!admin){
+            throw new CommonException(StatuesCode.NO_AUTH);
+        }
+        Long id = uploadSDKFile.getId();
+        //获取api信息
+        InterfaceInformation interfaceInformation = interfaceInformationService.getById(id);
+        if (interfaceInformation==null){
+            throw new CommonException(StatuesCode.PARAMS_ERROR,"api不存在");
+        }
+        MultipartFile file = uploadSDKFile.getFile();
+        //文件下载
+        String fileName=file.getOriginalFilename();//文件名
+        String dir="api-jar-lib";
+        String globalPathName=System.getProperty("user.dir")+File.separator+"API-module"+ File.separator+dir;
+        if (!FileUtil.exist(globalPathName)){//不存在dir文件夹,就创建
+            FileUtil.mkdir(globalPathName);
+        }
+        String jarParentPath=globalPathName+File.separator+ UUID.randomUUID();
+        File mkdir = FileUtil.mkdir(jarParentPath);
+        File dest = new File(jarParentPath+File.separator+fileName);
+        try {
+            file.transferTo(dest);
+        } catch (IOException e) {
+            FileUtil.del(mkdir);
+            throw new CommonException(StatuesCode.PARAMS_ERROR,"上传失败");
+        }
+        //更新api信息
+        String sdkUrl=dest.getAbsolutePath();
+        interfaceInformation.setSdkURL(sdkUrl);
+        boolean b = interfaceInformationService.updateById(interfaceInformation);
+        if (!b){
+            throw new CommonException(StatuesCode.PARAMS_ERROR);
+        }
+        return ResultUtils.success(true);
 
     }
-
+    @GetMapping("/downloadSDK")
+    public void downloadSDK(Long id, HttpServletResponse response) throws IOException {
+        if (id<1||id==null){
+            throw new CommonException(StatuesCode.PARAMS_ERROR,"api不存在");
+        }
+        InterfaceInformation interfaceInformation = interfaceInformationService.getById(id);
+        if (interfaceInformation==null){
+            throw new CommonException(StatuesCode.PARAMS_ERROR,"api不存在");
+        }
+        String sdkURL = interfaceInformation.getSdkURL();
+        try {
+            InputStream inputStream = new FileInputStream(sdkURL);// 文件的存放路径
+            response.reset();
+            response.setContentType("application/octet-stream");
+            String filename = new File(sdkURL).getName();
+            response.addHeader("Content-Disposition", "attachment; filename=" + URLEncoder.encode(filename, "UTF-8"));
+            ServletOutputStream outputStream = response.getOutputStream();
+            byte[] b = new byte[1024];
+            int len;
+            //从输入流中读取一定数量的字节，并将其存储在缓冲区字节数组中，读到末尾返回-1
+            while ((len = inputStream.read(b)) > 0) {
+                outputStream.write(b, 0, len);
+            }
+            inputStream.close();
+        }catch ( IOException e){
+            throw e;
+        }
+    }
 }

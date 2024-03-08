@@ -55,6 +55,24 @@ public class InterfaceInformation implements Serializable {
     private Integer status;
 
     /**
+     * 接口介绍
+     */
+    @TableField(value = "introduce")
+    private String introduce;
+
+    /**
+     * sdk的jar包地址
+     */
+    @TableField(value = "sdkURL")
+    private String sdkURL;
+
+    /**
+     * maven依赖
+     */
+    @TableField(value = "maven")
+    private String maven;
+
+    /**
      *
      */
     @TableLogic(value = "0", delval = "1")

@@ -51,4 +51,8 @@ public class NativeJavaCodeSandboxTest {
         ExecuteCodeResponse executeCodeResponse = nativeJavaSandBox.executeCode(executeCodeRequest);
 
     }
+    @Test
+   public void pathTest(){
+        System.out.println(System.getProperty("user.dir"));
+    }
 }
