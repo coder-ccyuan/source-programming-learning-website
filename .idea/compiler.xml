@@ -9,12 +9,12 @@
         <outputRelativeToContentRoot value="true" />
         <module name="OJ-code-sandbox-module" />
         <module name="API_gatway_module" />
-        <module name="API-module" />
+        <module name="Main-module" />
         <module name="common-module" />
-        <module name="OJ-module" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="API-module" target="1.8" />
       <module name="OJ" target="1.8" />
       <module name="test" target="1.8" />
     </bytecodeTargetLevel>
@@ -23,9 +23,9 @@
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="API-module" options="-parameters" />
       <module name="API_gatway_module" options="-parameters" />
+      <module name="Main-module" options="-parameters" />
       <module name="OJ" options="-parameters" />
       <module name="OJ-code-sandbox-module" options="-parameters" />
-      <module name="OJ-module" options="-parameters" />
       <module name="common-module" options="-parameters" />
       <module name="test" options="-parameters" />
     </option>

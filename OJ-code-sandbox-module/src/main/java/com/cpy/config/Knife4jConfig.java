@@ -32,7 +32,7 @@ public class Knife4jConfig {
                         .build())
                 .select()
                 // 指定 Controller 扫描包路径
-                .apis(RequestHandlerSelectors.basePackage("com.cpy.OJ.controller"))
+                .apis(RequestHandlerSelectors.basePackage("com.cpy.main.controller"))
                 .paths(PathSelectors.any())
                 .build();
     }

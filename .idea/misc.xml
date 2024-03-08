@@ -9,6 +9,7 @@
     </option>
     <option name="ignoredFiles">
       <set>
+        <option value="$PROJECT_DIR$/API-module/pom.xml" />
         <option value="$PROJECT_DIR$/OJ/pom.xml" />
       </set>
     </option>
