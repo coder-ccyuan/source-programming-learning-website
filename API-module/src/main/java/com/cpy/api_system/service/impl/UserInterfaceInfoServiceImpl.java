@@ -5,12 +5,12 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 import com.cpy.api_system.dao.mapper.InterfaceInformationMapper;
 import com.cpy.api_system.dao.mapper.UserInterfaceInfoMapper;
-import com.cpy.api_system.dao.mapper.UserMapper;
 import com.cpy.api_system.model.dto.userInterfaceIfo.UserInterfaceInfoAddRequest;
 import com.cpy.api_system.model.dto.userInterfaceIfo.UserInterfaceInfoUpdateRequest;
-import com.cpy.api_system.model.entity.InterfaceInformation;
 import com.cpy.api_system.model.entity.UserInterfaceInfo;
 import com.cpy.api_system.service.UserInterfaceInfoService;
+import com.cpy.clientApi.UserClient;
+import com.cpy.model.entity.InterfaceInformation;
 import com.cpy.model.entity.User;
 import org.springframework.stereotype.Service;
 
@@ -27,7 +27,7 @@ public class UserInterfaceInfoServiceImpl extends ServiceImpl<UserInterfaceInfoM
     @Resource
     InterfaceInformationMapper interfaceInformationMapper;
     @Resource
-    UserMapper userMapper;
+    UserClient userClient;
     @Override
     public UserInterfaceInfo verify(UserInterfaceInfoAddRequest addRequest) {
         //验证id
@@ -44,8 +44,8 @@ public class UserInterfaceInfoServiceImpl extends ServiceImpl<UserInterfaceInfoM
         //验证userId 是否存在
         QueryWrapper<User> qw2 = new QueryWrapper<>();
         qw.eq("id", addRequest.getInterfaceId());
-        Long integer2 = userMapper.selectCount(qw2);
-        if (integer != 1) {
+        Long integer2 = userClient.selectCount(qw2);
+        if (integer2 != 1) {
             return null;
         }
         //验证 totalNums

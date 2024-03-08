@@ -3,6 +3,7 @@ package com.cpy.OJ.model.vo;
 import com.cpy.OJ.model.dto.question.JudgeCase;
 import com.cpy.OJ.model.dto.question.JudgeConfig;
 import com.cpy.OJ.model.entity.Question;
+import com.cpy.model.vo.UserVO;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import lombok.Data;

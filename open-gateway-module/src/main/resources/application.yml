@@ -1,0 +1,70 @@
+server:
+  port: 8101
+spring:
+  application:
+    name: open-gateway-service
+  cloud:
+    nacos:
+      server-addr: localhost:8848
+    gateway:
+      routes:
+        - id: user-service
+          uri: lb://user-service
+          predicates:
+            - Path=/api/user/**
+        - id: OJ-service
+          uri: lb://OJ-service
+          predicates:
+            - Path=/api/OJ/**
+        - id: api-service
+          uri:
+            lb://api-service
+          predicates:
+            - Path=/api/API/**
+knife4j:
+  gateway:
+    # ① 第一个配置，开启gateway聚合组件
+    enabled: true
+    # ② 第二行配置，设置聚合模式采用discover服务发现的模式
+    strategy: discover
+    discover:
+      # ③ 第三行配置，开启discover模式
+      enabled: true
+      # ④ 第四行配置，聚合子服务全部为Swagger2规范的文档
+      version: swagger2
+
+
+
+#手动配置聚合
+#knife4j:
+#  # 聚合swagger文档
+#  gateway:
+#    enabled: true
+#    # 排序规则(tag/operation排序自4.2.0版本新增)
+#    # 取值：alpha-默认排序规则，官方swagger-ui默认实现,order-Knife4j提供的增强排序规则，开发者可扩展x-order，根据数值来自定义排序
+#    tags-sorter: order
+#    operations-sorter: order
+#    # 指定手动配置的模式(默认为该模式)
+#    strategy: manual
+#    routes:
+#      - name: 用户服务
+#        # 真实子服务访问url地址-提供OpenAPI的文档
+#        url: /user-service/v2/api-docs?group=default
+#        service-name: user-service
+#        # 路由前缀
+#        # 兼容OpenAPI3规范在聚合时丢失contextPath属性的异常情况，由开发者自己配置contextPath,Knife4j的前端Ui做兼容处理,与url属性独立不冲突，仅OpenAPI3规范聚合需要，OpenAPI2规范不需要设置此属性,默认为(apiPathPrefix)
+#        context-path: /
+#        order: 2
+#      - name: OJ服务
+#        url: /OJ-service/v2/api-docs?group=default
+#        service-name: OJ-service
+#        # 路由前缀
+#        context-path: /
+#        order: 3
+#      - name: API服务
+#        url: /API-service/v2/api-docs?group=default
+#        service-name: API-service
+#        # 路由前缀
+#        context-path: /
+#        order: 3
+

@@ -4,6 +4,7 @@ package com.yupi.springbootinit.service;
 import javax.annotation.Resource;
 
 import com.cpy.OJ.service.PostThumbService;
+import com.cpy.model.entity.User;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;

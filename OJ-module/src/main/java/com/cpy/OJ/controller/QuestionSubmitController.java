@@ -2,17 +2,17 @@ package com.cpy.OJ.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.cpy.OJ.common.BaseResponse;
-import com.cpy.OJ.common.ErrorCode;
-import com.cpy.OJ.common.ResultUtils;
-import com.cpy.OJ.exception.BusinessException;
-import com.cpy.OJ.exception.ThrowUtils;
+import com.cpy.clientApi.UserClient;
+import com.cpy.common.BaseResponse;
+import com.cpy.common.ErrorCode;
+import com.cpy.common.ResultUtils;
+import com.cpy.exception.BusinessException;
+import com.cpy.exception.ThrowUtils;
 import com.cpy.OJ.model.dto.questionSubmit.QuestionSubmitAddRequest;
 import com.cpy.OJ.model.dto.questionSubmit.QuestionSubmitQueryRequest;
 import com.cpy.OJ.model.entity.QuestionSubmit;
 import com.cpy.OJ.model.vo.QuestionSubmitVO;
 import com.cpy.OJ.service.QuestionSubmitService;
-import com.cpy.OJ.service.UserService;
 import com.cpy.model.entity.User;
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
@@ -37,7 +37,7 @@ public class QuestionSubmitController {
     private QuestionSubmitService questionSubmitService;
 
     @Resource
-    private UserService userService;
+    private UserClient userClient;
 
     private final static Gson GSON = new Gson();
 
@@ -64,7 +64,7 @@ public class QuestionSubmitController {
         }
         //校验数据
         questionSubmitService.validQuestionSubmit(questionSubmit);
-        User loginUser = userService.getLoginUser(request);
+        User loginUser = userClient.getLoginUser(request);
         questionSubmit.setUserId(loginUser.getId());
         //添加数据
         boolean result = questionSubmitService.save(questionSubmit);
@@ -95,7 +95,7 @@ public class QuestionSubmitController {
         long current = request.getCurrent();
         long pageSize = request.getPageSize();
         QueryWrapper<QuestionSubmit> questionSubmitQueryWrapper = new QueryWrapper<>();
-        questionSubmitQueryWrapper.eq("userId", userService.getLoginUser(httpServletRequest).getId());
+        questionSubmitQueryWrapper.eq("userId", userClient.getLoginUser(httpServletRequest).getId());
         Page<QuestionSubmit> page = questionSubmitService.page(new Page<>(current, pageSize), questionSubmitQueryWrapper);
         return ResultUtils.success(questionSubmitService.getQuestionSubmitVOPage(page));
     }

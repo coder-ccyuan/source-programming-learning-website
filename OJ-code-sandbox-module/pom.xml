@@ -8,7 +8,6 @@
         <artifactId>source-programming-learning-website</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
-
     <artifactId>OJ-code-sandbox-module</artifactId>
 
     <properties>

@@ -1,5 +1,6 @@
 package com.cpy.OJ.model.vo;
 
+import com.cpy.model.vo.UserVO;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.cpy.OJ.model.entity.Post;

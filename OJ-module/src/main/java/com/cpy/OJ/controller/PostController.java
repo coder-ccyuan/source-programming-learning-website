@@ -1,16 +1,17 @@
 package com.cpy.OJ.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.cpy.annotation.AuthCheck;
+import com.cpy.clientApi.UserClient;
+import com.cpy.common.BaseResponse;
+import com.cpy.common.DeleteRequest;
+import com.cpy.common.ErrorCode;
+import com.cpy.common.ResultUtils;
+import com.cpy.constant.UserConstant;
+import com.cpy.exception.BusinessException;
+import com.cpy.exception.ThrowUtils;
 import com.cpy.model.entity.User;
 import com.google.gson.Gson;
-import com.cpy.OJ.annotation.AuthCheck;
-import com.cpy.OJ.common.BaseResponse;
-import com.cpy.OJ.common.DeleteRequest;
-import com.cpy.OJ.common.ErrorCode;
-import com.cpy.OJ.common.ResultUtils;
-import com.cpy.OJ.constant.UserConstant;
-import com.cpy.OJ.exception.BusinessException;
-import com.cpy.OJ.exception.ThrowUtils;
 import com.cpy.OJ.model.dto.post.PostAddRequest;
 import com.cpy.OJ.model.dto.post.PostEditRequest;
 import com.cpy.OJ.model.dto.post.PostQueryRequest;
@@ -18,7 +19,7 @@ import com.cpy.OJ.model.dto.post.PostUpdateRequest;
 import com.cpy.OJ.model.entity.Post;
 import com.cpy.OJ.model.vo.PostVO;
 import com.cpy.OJ.service.PostService;
-import com.cpy.OJ.service.UserService;
+
 import java.util.List;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -29,6 +30,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import static com.cpy.utils.IsUser.isAdmin;
 
 /**
  * 帖子接口
@@ -45,7 +48,7 @@ public class PostController {
     private PostService postService;
 
     @Resource
-    private UserService userService;
+    private UserClient userClient;
 
     private final static Gson GSON = new Gson();
 
@@ -70,7 +73,7 @@ public class PostController {
             post.setTags(GSON.toJson(tags));
         }
         postService.validPost(post, true);
-        User loginUser = userService.getLoginUser(request);
+        User loginUser = userClient.getLoginUser(request);
         post.setUserId(loginUser.getId());
         post.setFavourNum(0);
         post.setThumbNum(0);
@@ -92,13 +95,13 @@ public class PostController {
         if (deleteRequest == null || deleteRequest.getId() <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        User user = userService.getLoginUser(request);
+        User user = userClient.getLoginUser(request);
         long id = deleteRequest.getId();
         // 判断是否存在
         Post oldPost = postService.getById(id);
         ThrowUtils.throwIf(oldPost == null, ErrorCode.NOT_FOUND_ERROR);
         // 仅本人或管理员可删除
-        if (!oldPost.getUserId().equals(user.getId()) && !userService.isAdmin(request)) {
+        if (!oldPost.getUserId().equals(user.getId()) && !isAdmin(request)) {
             throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
         }
         boolean b = postService.removeById(id);
@@ -183,7 +186,7 @@ public class PostController {
         if (postQueryRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        User loginUser = userService.getLoginUser(request);
+        User loginUser = userClient.getLoginUser(request);
         postQueryRequest.setUserId(loginUser.getId());
         long current = postQueryRequest.getCurrent();
         long size = postQueryRequest.getPageSize();
@@ -234,13 +237,13 @@ public class PostController {
         }
         // 参数校验
         postService.validPost(post, false);
-        User loginUser = userService.getLoginUser(request);
+        User loginUser = userClient.getLoginUser(request);
         long id = postEditRequest.getId();
         // 判断是否存在
         Post oldPost = postService.getById(id);
         ThrowUtils.throwIf(oldPost == null, ErrorCode.NOT_FOUND_ERROR);
         // 仅本人或管理员可编辑
-        if (!oldPost.getUserId().equals(loginUser.getId()) && !userService.isAdmin(loginUser)) {
+        if (!oldPost.getUserId().equals(loginUser.getId()) && !isAdmin(request)) {
             throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
         }
         boolean result = postService.updateById(post);

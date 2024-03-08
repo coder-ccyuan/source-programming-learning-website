@@ -5,10 +5,12 @@ import cn.hutool.crypto.digest.DigestAlgorithm;
 import cn.hutool.crypto.digest.Digester;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.json.JSONUtil;
-import com.cpy.apigateway.model.BaseResponse;
-import com.cpy.apigateway.model.InterfaceInformation;
-import com.cpy.apigateway.model.InterfaceInformationQueryRequest;
-import com.cpy.apigateway.model.UserSecretKeyRequest;
+import com.cpy.clientApi.InterfaceClient;
+import com.cpy.clientApi.UserClient;
+import com.cpy.model.dto.user.UserSecretKeyRequest;
+import com.cpy.common.BaseResponse;
+import com.cpy.model.dto.interfaceInfo.InterfaceInformationQueryRequest;
+import com.cpy.model.entity.InterfaceInformation;
 import lombok.extern.slf4j.Slf4j;
 import org.reactivestreams.Publisher;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
@@ -26,6 +28,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import javax.annotation.Resource;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
@@ -41,6 +45,10 @@ public class CustomGlobalFilter implements GlobalFilter, Ordered {
      * 白名单
      */
     public static final List<String> WHITE_LIST = Arrays.asList("127.0.0.1");
+    @Resource
+    private UserClient userClient;
+    @Resource
+    private InterfaceClient interfaceClient;
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
@@ -90,8 +98,11 @@ public class CustomGlobalFilter implements GlobalFilter, Ordered {
         InterfaceInformationQueryRequest interfaceInformationQueryRequest = new InterfaceInformationQueryRequest();
         interfaceInformationQueryRequest.setUrl(url);
         String s1 = JSONUtil.toJsonStr(interfaceInformationQueryRequest);
-        String res = HttpRequest.post("http://localhost:8092/interfaceInfo/query/url").body(s1).execute().body();
-        InterfaceInformation interfaceInformation = JSONUtil.toBean(res, InterfaceInformation.class);
+//        String res = HttpRequest.post("http://localhost:8092/interfaceInfo/query/url").body(s1).execute().body();
+//        InterfaceInformation interfaceInformation = JSONUtil.toBean(res, InterfaceInformation.class);
+        InterfaceInformationQueryRequest request1 = new InterfaceInformationQueryRequest();
+        request1.setUrl(url);
+        InterfaceInformation interfaceInformation = interfaceClient.queryByUrl(request1);
         if (interfaceInformation.getStatus()==1){
             handlerInterfaceNotExist(response);
         }
@@ -161,12 +172,16 @@ public class CustomGlobalFilter implements GlobalFilter, Ordered {
         return response.setComplete();
     }
     public String getSecretKey(String accessKey){
-        String url="http://localhost:8092/user/get/secretKey";
+        //原始获取
+//        String url="http://localhost:8092/user/get/secretKey";
+//        UserSecretKeyRequest userSecretKeyRequest = new UserSecretKeyRequest();
+//        userSecretKeyRequest.setAccessKey(accessKey);
+//        String body = HttpRequest.post(url).body(JSONUtil.toJsonStr(userSecretKeyRequest)).execute().body();
+        //通过feign获取
         UserSecretKeyRequest userSecretKeyRequest = new UserSecretKeyRequest();
         userSecretKeyRequest.setAccessKey(accessKey);
-        String body = HttpRequest.post(url).body(JSONUtil.toJsonStr(userSecretKeyRequest)).execute().body();
-        BaseResponse baseResponse = JSONUtil.toBean(body, BaseResponse.class);
-        if (baseResponse.getCode()!=20000)return "";
-        return baseResponse.getData();
+        String secretKey = userClient.getSecretKeyByAccessKey(userSecretKeyRequest);
+        if (secretKey==null)return "";
+        return secretKey;
     }
 }

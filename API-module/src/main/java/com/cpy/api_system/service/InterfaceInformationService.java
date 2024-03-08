@@ -1,10 +1,8 @@
 package com.cpy.api_system.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.cpy.api_system.model.dto.interfaceInfo.InterfaceInformationAddRequest;
-import com.cpy.api_system.model.dto.interfaceInfo.InterfaceInformationQueryRequest;
-import com.cpy.api_system.model.dto.interfaceInfo.InterfaceInformationUpdateRequest;
-import com.cpy.api_system.model.entity.InterfaceInformation;
+import com.cpy.model.dto.interfaceInfo.*;
+import com.cpy.model.entity.InterfaceInformation;
 
 
 /**

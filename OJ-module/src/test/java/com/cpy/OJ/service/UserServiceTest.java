@@ -1,6 +1,7 @@
 package com.cpy.OJ.service;
 
 import javax.annotation.Resource;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -14,22 +15,22 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 public class UserServiceTest {
 
-    @Resource
-    private UserService userService;
+//    @Resource
+//    private UserService userService;
+//
+//    @Test
+//    void userRegister() {
+//        String userAccount = "cpy";
+//        String userPassword = "";
+//        String checkPassword = "123456";
+//        try {
+//            long result = userService.userRegister(userAccount, userPassword, checkPassword);
+//            Assertions.assertEquals(-1, result);
+//            userAccount = "yu";
+//            result = userService.userRegister(userAccount, userPassword, checkPassword);
+//            Assertions.assertEquals(-1, result);
+//        } catch (Exception e) {
 
-    @Test
-    void userRegister() {
-        String userAccount = "cpy";
-        String userPassword = "";
-        String checkPassword = "123456";
-        try {
-            long result = userService.userRegister(userAccount, userPassword, checkPassword);
-            Assertions.assertEquals(-1, result);
-            userAccount = "yu";
-            result = userService.userRegister(userAccount, userPassword, checkPassword);
-            Assertions.assertEquals(-1, result);
-        } catch (Exception e) {
-
-        }
-    }
+//        }
+//    }
 }

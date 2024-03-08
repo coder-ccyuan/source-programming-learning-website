@@ -1,5 +1,7 @@
 server:
   port: 8093
+  servlet:
+    context-path: /api/API
 spring:
   cloud:
     gateway:
@@ -8,3 +10,7 @@ spring:
           uri: http://localhost:8888
           predicates:
             - Path=/**
+    nacos:
+      server-addr: localhost:8848
+  application:
+    name: api-gateway

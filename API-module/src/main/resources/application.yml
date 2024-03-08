@@ -5,6 +5,7 @@ spring:
     store-type: redis
     #     30 天过期
     timeout: 2592000
+    path: /api
   # Redis 配置
   redis:
     host: localhost
@@ -17,7 +18,6 @@ spring:
         min-idle: 1
         time-between-eviction-runs: 10s
     database: 0
-
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
@@ -26,6 +26,11 @@ spring:
     username: root
     password: 123456
     url: jdbc:mysql://localhost:3306/source_website?rewriteBatchedStatements=true
+  cloud:
+    nacos:
+      server-addr: localhost:8848
+  application:
+    name: api-service
 mybatis-plus:
   configuration:
     map-underscore-to-camel-case: false
@@ -38,7 +43,10 @@ mybatis-plus:
 server:
   port: 8092
   servlet:
+    context-path: /api/API
 #api:
 #  client:
 #    secret-key: 12345678
 #    access-key: admin
+knife4j:
+  enable: true

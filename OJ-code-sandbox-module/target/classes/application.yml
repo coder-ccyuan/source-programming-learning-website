@@ -2,7 +2,7 @@ server:
   port: 8091
 spring:
   application:
-    name: OJ-code-sandbox
+    name: OJ-code-sandbox-service
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher

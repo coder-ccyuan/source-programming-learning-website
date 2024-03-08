@@ -2,8 +2,6 @@ package com.cpy.OJ.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.cpy.OJ.common.ErrorCode;
-import com.cpy.OJ.exception.BusinessException;
 import com.cpy.OJ.mapper.PostThumbMapper;
 import com.cpy.OJ.model.entity.Post;
 import com.cpy.OJ.model.entity.PostThumb;
@@ -11,6 +9,8 @@ import com.cpy.OJ.service.PostService;
 import com.cpy.OJ.service.PostThumbService;
 import javax.annotation.Resource;
 
+import com.cpy.common.ErrorCode;
+import com.cpy.exception.BusinessException;
 import com.cpy.model.entity.User;
 import org.springframework.aop.framework.AopContext;
 import org.springframework.stereotype.Service;

@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.cpy.api_system.dao.mapper.InterfaceInformationMapper">
 
-    <resultMap id="BaseResultMap" type="com.cpy.api_system.model.entity.InterfaceInformation">
+    <resultMap id="BaseResultMap" type="com.cpy.model.entity.InterfaceInformation">
         <id property="id" column="id" jdbcType="BIGINT"/>
         <result property="name" column="name" jdbcType="VARCHAR"/>
         <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>

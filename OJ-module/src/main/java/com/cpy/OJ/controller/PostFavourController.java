@@ -1,11 +1,6 @@
 package com.cpy.OJ.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.cpy.OJ.common.BaseResponse;
-import com.cpy.OJ.common.ErrorCode;
-import com.cpy.OJ.common.ResultUtils;
-import com.cpy.OJ.exception.BusinessException;
-import com.cpy.OJ.exception.ThrowUtils;
 import com.cpy.OJ.model.dto.post.PostQueryRequest;
 import com.cpy.OJ.model.dto.postfavour.PostFavourAddRequest;
 import com.cpy.OJ.model.dto.postfavour.PostFavourQueryRequest;
@@ -13,10 +8,15 @@ import com.cpy.OJ.model.entity.Post;
 import com.cpy.OJ.model.vo.PostVO;
 import com.cpy.OJ.service.PostFavourService;
 import com.cpy.OJ.service.PostService;
-import com.cpy.OJ.service.UserService;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.cpy.clientApi.UserClient;
+import com.cpy.common.BaseResponse;
+import com.cpy.common.ErrorCode;
+import com.cpy.common.ResultUtils;
+import com.cpy.exception.BusinessException;
+import com.cpy.exception.ThrowUtils;
 import com.cpy.model.entity.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -42,7 +42,7 @@ public class PostFavourController {
     private PostService postService;
 
     @Resource
-    private UserService userService;
+    private UserClient userClient;
 
     /**
      * 收藏 / 取消收藏
@@ -53,12 +53,12 @@ public class PostFavourController {
      */
     @PostMapping("/")
     public BaseResponse<Integer> doPostFavour(@RequestBody PostFavourAddRequest postFavourAddRequest,
-            HttpServletRequest request) {
+                                              HttpServletRequest request) {
         if (postFavourAddRequest == null || postFavourAddRequest.getPostId() <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         // 登录才能操作
-        final User loginUser = userService.getLoginUser(request);
+        final User loginUser = userClient.getLoginUser(request);
         long postId = postFavourAddRequest.getPostId();
         int result = postFavourService.doPostFavour(postId, loginUser);
         return ResultUtils.success(result);
@@ -76,7 +76,7 @@ public class PostFavourController {
         if (postQueryRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        User loginUser = userService.getLoginUser(request);
+        User loginUser = userClient.getLoginUser(request);
         long current = postQueryRequest.getCurrent();
         long size = postQueryRequest.getPageSize();
         // 限制爬虫

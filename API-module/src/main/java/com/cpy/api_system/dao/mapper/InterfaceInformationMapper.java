@@ -1,7 +1,7 @@
 package com.cpy.api_system.dao.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.cpy.api_system.model.entity.InterfaceInformation;
+import com.cpy.model.entity.InterfaceInformation;
 
 /**
 * @author 成希德

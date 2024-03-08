@@ -7,9 +7,6 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.cpy.OJ.common.ErrorCode;
-import com.cpy.OJ.exception.BusinessException;
-import com.cpy.OJ.exception.ThrowUtils;
 import com.cpy.OJ.judge.codeSandBox.CodeSandBox;
 import com.cpy.OJ.judge.codeSandBox.model.ExecuteCodeRequest;
 import com.cpy.OJ.judge.codeSandBox.model.ExecuteCodeResponse;
@@ -19,11 +16,14 @@ import com.cpy.OJ.model.entity.Question;
 import com.cpy.OJ.model.entity.QuestionSubmit;
 import com.cpy.OJ.model.vo.QuestionSubmitVO;
 import com.cpy.OJ.model.vo.QuestionVO;
-import com.cpy.OJ.model.vo.UserVO;
 import com.cpy.OJ.service.QuestionService;
 import com.cpy.OJ.service.QuestionSubmitService;
-import com.cpy.OJ.service.UserService;
+import com.cpy.clientApi.UserClient;
+import com.cpy.common.ErrorCode;
+import com.cpy.exception.BusinessException;
+import com.cpy.exception.ThrowUtils;
 import com.cpy.model.entity.User;
+import com.cpy.model.vo.UserVO;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -43,7 +43,7 @@ public class QuestionSubmitServiceImpl extends ServiceImpl<QuestionSubmitMapper,
     @Resource
     QuestionService questionService;
     @Resource
-    UserService userService;
+    UserClient userClient;
     @Resource
     CodeSandBox codeSandBox;
 
@@ -80,7 +80,7 @@ public class QuestionSubmitServiceImpl extends ServiceImpl<QuestionSubmitMapper,
             Long userId = record.getUserId();
             Question question = questionService.getById(questionId);
             QuestionVO questionVO = QuestionVO.objToVo(question);
-            User user = userService.getById(userId);
+            User user = userClient.getById(userId);
             UserVO userVO = new UserVO();
             BeanUtil.copyProperties(user, userVO);
             questionSubmitVO.setQuestionVO(questionVO);
@@ -180,7 +180,7 @@ public class QuestionSubmitServiceImpl extends ServiceImpl<QuestionSubmitMapper,
         questionSubmitVO.setUserId(questionSubmit.getUserId());
         questionSubmitVO.setQuestionId(question.getId());
         questionSubmitVO.setStatus(questionSubmit.getStatus());
-        questionSubmitVO.setUserVO(userService.getUserVO(userService.getById(questionSubmit.getUserId())));
+        questionSubmitVO.setUserVO(userClient.getUserVO(userClient.getById(questionSubmit.getUserId())));
         return questionSubmitVO;
     }
 }

@@ -4,11 +4,14 @@
     <file url="file://$PROJECT_DIR$/API-module/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/API_gatway_module/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/OJ-code-sandbox-module/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/OJ-code-sandbox-module/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/OJ-module/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/OJ/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/common-module/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/open-gateway-module/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/test/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/user-module/src/main/java" charset="UTF-8" />
   </component>
 </project>

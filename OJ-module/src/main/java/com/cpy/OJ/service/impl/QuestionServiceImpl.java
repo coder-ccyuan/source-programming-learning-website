@@ -3,19 +3,19 @@ package com.cpy.OJ.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.cpy.OJ.common.ErrorCode;
-import com.cpy.OJ.constant.CommonConstant;
-import com.cpy.OJ.exception.BusinessException;
-import com.cpy.OJ.exception.ThrowUtils;
 import com.cpy.OJ.mapper.QuestionMapper;
 import com.cpy.OJ.model.dto.question.QuestionQueryRequest;
 import com.cpy.OJ.model.entity.*;
 import com.cpy.OJ.model.vo.QuestionVO;
-import com.cpy.OJ.model.vo.UserVO;
 import com.cpy.OJ.service.QuestionService;
-import com.cpy.OJ.service.UserService;
-import com.cpy.OJ.utils.SqlUtils;
+import com.cpy.clientApi.UserClient;
+import com.cpy.common.ErrorCode;
+import com.cpy.constant.CommonConstant;
+import com.cpy.exception.BusinessException;
+import com.cpy.exception.ThrowUtils;
 import com.cpy.model.entity.User;
+import com.cpy.model.vo.UserVO;
+import com.cpy.utils.SqlUtils;
 import com.google.gson.Gson;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -47,7 +47,7 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question>
     private final static Gson GSON = new Gson();
 
     @Resource
-    private UserService userService;
+    private UserClient userClient;
 
     @Resource
     private ElasticsearchRestTemplate elasticsearchRestTemplate;
@@ -222,12 +222,12 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question>
         Long userId = question.getUserId();
         User user = null;
         if (userId != null && userId > 0) {
-            user = userService.getById(userId);
+            user = userClient.getById(userId);
         }
-        UserVO userVO = userService.getUserVO(user);
+        UserVO userVO = userClient.getUserVO(user);
         questionVO.setUserVO(userVO);
         // 2. 已登录，获取用户点赞、收藏状态
-        User loginUser = userService.getLoginUserPermitNull(request);
+        User loginUser = userClient.getLoginUserPermitNull(request);
 //        if (loginUser != null) {
 //            // 获取点赞
 //            QueryWrapper<PostThumb> questionThumbQueryWrapper = new QueryWrapper<>();
@@ -254,15 +254,15 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question>
         }
         // 1. 关联查询用户信息
         Set<Long> userIdSet = questionList.stream().map(Question::getUserId).collect(Collectors.toSet());
-        Map<Long, List<User>> userIdUserListMap = userService.listByIds(userIdSet).stream()
+        Map<Long, List<User>> userIdUserListMap = userClient.listByIds(userIdSet).stream()
                 .collect(Collectors.groupingBy(User::getId));
         // 2. 已登录，获取用户点赞、收藏状态
         Map<Long, Boolean> questionIdHasThumbMap = new HashMap<>();
         Map<Long, Boolean> questionIdHasFavourMap = new HashMap<>();
-        User loginUser = userService.getLoginUserPermitNull(request);
+        User loginUser = userClient.getLoginUserPermitNull(request);
 //        if (loginUser != null) {
 //            Set<Long> questionIdSet = questionList.stream().map(Question::getId).collect(Collectors.toSet());
-//            loginUser = userService.getLoginUser(request);
+//            loginUser = userClient.getLoginUser(request);
 //            // 获取点赞
 //            QueryWrapper<QuestionThumb> questionThumbQueryWrapper = new QueryWrapper<>();
 //            questionThumbQueryWrapper.in("questionId", questionIdSet);
@@ -284,7 +284,7 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question>
             if (userIdUserListMap.containsKey(userId)) {
                 user = userIdUserListMap.get(userId).get(0);
             }
-            questionVO.setUserVO(userService.getUserVO(user));
+            questionVO.setUserVO(userClient.getUserVO(user));
 //            questionVO.setHasThumb(questionIdHasThumbMap.getOrDefault(question.getId(), false));
 //            questionVO.setHasFavour(questionIdHasFavourMap.getOrDefault(question.getId(), false));
             return questionVO;

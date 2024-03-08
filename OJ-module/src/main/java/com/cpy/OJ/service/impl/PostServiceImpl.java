@@ -3,12 +3,6 @@ package com.cpy.OJ.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.cpy.model.entity.User;
-import com.google.gson.Gson;
-import com.cpy.OJ.common.ErrorCode;
-import com.cpy.OJ.constant.CommonConstant;
-import com.cpy.OJ.exception.BusinessException;
-import com.cpy.OJ.exception.ThrowUtils;
 import com.cpy.OJ.mapper.PostFavourMapper;
 import com.cpy.OJ.mapper.PostMapper;
 import com.cpy.OJ.mapper.PostThumbMapper;
@@ -18,18 +12,16 @@ import com.cpy.OJ.model.entity.Post;
 import com.cpy.OJ.model.entity.PostFavour;
 import com.cpy.OJ.model.entity.PostThumb;
 import com.cpy.OJ.model.vo.PostVO;
-import com.cpy.OJ.model.vo.UserVO;
 import com.cpy.OJ.service.PostService;
-import com.cpy.OJ.service.UserService;
-import com.cpy.OJ.utils.SqlUtils;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
+import com.cpy.clientApi.UserClient;
+import com.cpy.common.ErrorCode;
+import com.cpy.constant.CommonConstant;
+import com.cpy.exception.BusinessException;
+import com.cpy.exception.ThrowUtils;
+import com.cpy.model.entity.User;
+import com.cpy.model.vo.UserVO;
+import com.cpy.utils.SqlUtils;
+import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -47,11 +39,13 @@ import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import java.util.*;
+import java.util.stream.Collectors;
+
 /**
  * 帖子服务实现
- *
- * @author <a href="https://github.com/licpy">程序员鱼皮</a>
- * @from <a href="https://cpy.icu">编程导航知识星球</a>
  */
 @Service
 @Slf4j
@@ -60,7 +54,7 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
     private final static Gson GSON = new Gson();
 
     @Resource
-    private UserService userService;
+    private UserClient userClient;
 
     @Resource
     private PostThumbMapper postThumbMapper;
@@ -238,12 +232,12 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
         Long userId = post.getUserId();
         User user = null;
         if (userId != null && userId > 0) {
-            user = userService.getById(userId);
+            user = userClient.getById(userId);
         }
-        UserVO userVO = userService.getUserVO(user);
+        UserVO userVO = userClient.getUserVO(user);
         postVO.setUser(userVO);
         // 2. 已登录，获取用户点赞、收藏状态
-        User loginUser = userService.getLoginUserPermitNull(request);
+        User loginUser = userClient.getLoginUserPermitNull(request);
         if (loginUser != null) {
             // 获取点赞
             QueryWrapper<PostThumb> postThumbQueryWrapper = new QueryWrapper<>();
@@ -270,15 +264,15 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
         }
         // 1. 关联查询用户信息
         Set<Long> userIdSet = postList.stream().map(Post::getUserId).collect(Collectors.toSet());
-        Map<Long, List<User>> userIdUserListMap = userService.listByIds(userIdSet).stream()
+        Map<Long, List<User>> userIdUserListMap = userClient.listByIds(userIdSet).stream()
                 .collect(Collectors.groupingBy(User::getId));
         // 2. 已登录，获取用户点赞、收藏状态
         Map<Long, Boolean> postIdHasThumbMap = new HashMap<>();
         Map<Long, Boolean> postIdHasFavourMap = new HashMap<>();
-        User loginUser = userService.getLoginUserPermitNull(request);
+        User loginUser = userClient.getLoginUserPermitNull(request);
         if (loginUser != null) {
             Set<Long> postIdSet = postList.stream().map(Post::getId).collect(Collectors.toSet());
-            loginUser = userService.getLoginUser(request);
+            loginUser = userClient.getLoginUser(request);
             // 获取点赞
             QueryWrapper<PostThumb> postThumbQueryWrapper = new QueryWrapper<>();
             postThumbQueryWrapper.in("postId", postIdSet);
@@ -300,7 +294,7 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
             if (userIdUserListMap.containsKey(userId)) {
                 user = userIdUserListMap.get(userId).get(0);
             }
-            postVO.setUser(userService.getUserVO(user));
+            postVO.setUser(userClient.getUserVO(user));
             postVO.setHasThumb(postIdHasThumbMap.getOrDefault(post.getId(), false));
             postVO.setHasFavour(postIdHasFavourMap.getOrDefault(post.getId(), false));
             return postVO;

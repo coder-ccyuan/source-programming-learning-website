@@ -7,11 +7,13 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="OJ-code-sandbox-module" />
-        <module name="API_gatway_module" />
-        <module name="API-module" />
+        <module name="user-module" />
         <module name="common-module" />
         <module name="OJ-module" />
+        <module name="API_gatway_module" />
+        <module name="OJ-code-sandbox-module" />
+        <module name="API-module" />
+        <module name="open-gateway-module" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
@@ -27,7 +29,9 @@
       <module name="OJ-code-sandbox-module" options="-parameters" />
       <module name="OJ-module" options="-parameters" />
       <module name="common-module" options="-parameters" />
+      <module name="open-gateway-module" options="-parameters" />
       <module name="test" options="-parameters" />
+      <module name="user-module" options="-parameters" />
     </option>
   </component>
 </project>

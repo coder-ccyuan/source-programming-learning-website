@@ -5,11 +5,11 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 import com.cpy.api_system.dao.mapper.InterfaceInformationMapper;
-import com.cpy.api_system.model.dto.interfaceInfo.InterfaceInformationAddRequest;
-import com.cpy.api_system.model.dto.interfaceInfo.InterfaceInformationUpdateRequest;
-import com.cpy.api_system.model.entity.InterfaceInformation;
 import com.cpy.api_system.service.InterfaceInformationService;
 import com.cpy.api_system.utils.VerifyUtils;
+import com.cpy.model.dto.interfaceInfo.InterfaceInformationAddRequest;
+import com.cpy.model.dto.interfaceInfo.InterfaceInformationUpdateRequest;
+import com.cpy.model.entity.InterfaceInformation;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;

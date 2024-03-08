@@ -2,7 +2,6 @@ package com.cpy.OJ.judge.codeSandBox.imp;
 
 
 import cn.hutool.http.HttpRequest;
-import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONUtil;
 import com.cpy.OJ.judge.codeSandBox.CodeSandBox;
 import com.cpy.OJ.judge.codeSandBox.model.ExecuteCodeRequest;
