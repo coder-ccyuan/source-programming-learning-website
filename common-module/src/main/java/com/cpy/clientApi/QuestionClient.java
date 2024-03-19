@@ -17,4 +17,6 @@ public interface QuestionClient {
     Boolean updateQuestionSubmit(@RequestBody QuestionSubmit questionSubmit);
     @GetMapping("/question/get")
     Question getQuestionById(@RequestParam long id);
+    @PostMapping("/question/update")
+    Boolean updateQuestion(@RequestBody Question question);
 }

@@ -46,8 +46,6 @@ public class QuestionSubmitServiceImpl extends ServiceImpl<QuestionSubmitMapper,
     @Resource
     UserClient userClient;
     @Resource
-    JudgeClient judgeClient;
-    @Resource
     RabbitTemplate rabbitTemplate;
 
     @Override

@@ -11,9 +11,11 @@ import com.cpy.exception.ThrowUtils;
 import com.cpy.model.dto.questionSubmit.JudgeInfo;
 import com.cpy.model.dto.questionSubmit.QuestionSubmitAddRequest;
 import com.cpy.model.dto.questionSubmit.QuestionSubmitQueryRequest;
+import com.cpy.model.entity.Question;
 import com.cpy.model.entity.QuestionSubmit;
 import com.cpy.model.entity.User;
 import com.cpy.model.vo.QuestionSubmitVO;
+import com.cpy.question.service.QuestionService;
 import com.cpy.question.service.QuestionSubmitService;
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
@@ -40,6 +42,8 @@ public class QuestionSubmitController {
 
     @Resource
     private UserClient userClient;
+    @Resource
+    private QuestionService questionService;
 
     private final static Gson GSON = new Gson();
 
@@ -58,7 +62,6 @@ public class QuestionSubmitController {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         QuestionSubmit questionSubmit = new QuestionSubmit();
-
         BeanUtils.copyProperties(questionSubmitAddRequest, questionSubmit);
         String judgeInfo = questionSubmit.getJudgeInfo();
         if (judgeInfo != null) {
@@ -71,6 +74,11 @@ public class QuestionSubmitController {
         //添加数据
         boolean result = questionSubmitService.save(questionSubmit);
         ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
+        Long questionId = questionSubmit.getQuestionId();
+        Question question = questionService.getById(questionId);
+        Integer submitNum = question.getSubmitNum();
+        question.setSubmitNum(++submitNum);
+        boolean b = questionService.updateById(question);
         //进行判题
         questionSubmitService.judge(questionSubmit.getId());
         return ResultUtils.success(questionSubmit.getId());

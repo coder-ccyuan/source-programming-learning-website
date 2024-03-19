@@ -240,7 +240,6 @@ public class InterfaceInformationController {
             throw new BusinessException(ErrorCode.PARAMS_ERROR,"未携带请求方法");
         }
         //todo 完善response
-
         if (response.equals("Error request, response status: 403")){
             throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
         }

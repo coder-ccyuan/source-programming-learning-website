@@ -5,10 +5,7 @@ import com.cpy.common.ResultUtils;
 import com.cpy.model.entity.Question;
 import com.cpy.model.entity.QuestionSubmit;
 import com.cpy.question.service.QuestionService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
@@ -25,5 +22,10 @@ public class InnerQuestionController {
     BaseResponse<Question> getQuestionById(@RequestParam long id ){
         Question byId = questionService.getById(id);
        return ResultUtils.success(byId);
+    }
+    @PostMapping("/update")
+    BaseResponse<Boolean> updateQuestion(@RequestBody Question question){
+        boolean b = questionService.updateById(question);
+        return ResultUtils.success(b);
     }
 }

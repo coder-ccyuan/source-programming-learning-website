@@ -93,6 +93,9 @@ public class JudgeConsumer {
             questionSubmit.setStatus(3);
         } else {
             //判题成功
+            Integer acceptedNum = question.getAcceptedNum();
+            question.setAcceptedNum(++acceptedNum);
+            questionClient.updateQuestion(question);
             questionSubmit.setStatus(2);
         }
         //填充数据
