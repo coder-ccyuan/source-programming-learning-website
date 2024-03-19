@@ -46,3 +46,11 @@ server:
     session:
       cookie:
         max-age: 2592000
+logging:
+  level:
+    feign.Logger: debug
+feign:
+  client:
+    config:
+      default:
+        loggerLevel: full

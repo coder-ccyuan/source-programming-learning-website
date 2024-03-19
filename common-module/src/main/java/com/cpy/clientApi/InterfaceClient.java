@@ -15,5 +15,5 @@ public interface InterfaceClient {
      * @return
      */
     @PostMapping("/InterfaceInfo/query/url")
-    public InterfaceInformation queryByUrl(@RequestBody InterfaceInformationQueryRequest queryRequest);
+     InterfaceInformation queryByUrl(@RequestBody InterfaceInformationQueryRequest queryRequest);
 }

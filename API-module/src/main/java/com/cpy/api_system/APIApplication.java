@@ -1,5 +1,6 @@
 package com.cpy.api_system;
 
+import com.github.xiaoymin.knife4j.spring.annotations.EnableKnife4j;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -13,6 +14,7 @@ import org.springframework.session.data.redis.config.annotation.web.http.EnableR
 @MapperScan("com.cpy.api_system.dao.mapper")
 @EnableRedisHttpSession//启用分布式session
 @EnableFeignClients
+@EnableKnife4j
 @EnableDiscoveryClient
 @ComponentScan("com.cpy")
 public class APIApplication {

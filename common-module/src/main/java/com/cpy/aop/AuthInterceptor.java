@@ -3,6 +3,7 @@ package com.cpy.aop;
 import com.cpy.annotation.AuthCheck;
 import com.cpy.clientApi.UserClient;
 import com.cpy.common.ErrorCode;
+import com.cpy.constant.UserConstant;
 import com.cpy.enums.UserRoleEnum;
 import com.cpy.exception.BusinessException;
 import com.cpy.model.entity.User;
@@ -44,7 +45,8 @@ public class AuthInterceptor {
         RequestAttributes requestAttributes = RequestContextHolder.currentRequestAttributes();
         HttpServletRequest request = ((ServletRequestAttributes) requestAttributes).getRequest();
         // 当前登录用户
-        User loginUser = userClient.getLoginUser(request);
+        User user =(User) request.getSession().getAttribute(UserConstant.USER_LOGIN_STATE);
+        User loginUser = userClient.getLoginUser();
         // 必须有该权限才通过
         if (StringUtils.isNotBlank(mustRole)) {
             UserRoleEnum mustUserRoleEnum = UserRoleEnum.getEnumByValue(mustRole);

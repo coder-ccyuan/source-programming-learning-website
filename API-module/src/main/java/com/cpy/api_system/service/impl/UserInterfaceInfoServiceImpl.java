@@ -1,5 +1,6 @@
 package com.cpy.api_system.service.impl;
 
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
@@ -41,11 +42,10 @@ public class UserInterfaceInfoServiceImpl extends ServiceImpl<UserInterfaceInfoM
         if (integer != 1) {
             return null;
         }
-        //验证userId 是否存在
-        QueryWrapper<User> qw2 = new QueryWrapper<>();
-        qw.eq("id", addRequest.getInterfaceId());
-        Long integer2 = userClient.selectCount(qw2);
-        if (integer2 != 1) {
+        //验证用户是否存在
+        Long userId = addRequest.getUserId();
+        User byId = userClient.getById(userId);
+        if (byId==null) {
             return null;
         }
         //验证 totalNums

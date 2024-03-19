@@ -103,7 +103,7 @@ public class CustomGlobalFilter implements GlobalFilter, Ordered {
         InterfaceInformationQueryRequest request1 = new InterfaceInformationQueryRequest();
         request1.setUrl(url);
         InterfaceInformation interfaceInformation = interfaceClient.queryByUrl(request1);
-        if (interfaceInformation.getStatus()==1){
+        if (interfaceInformation==null||interfaceInformation.getStatus()==1){
             handlerInterfaceNotExist(response);
         }
         //5.请求转发调用接口

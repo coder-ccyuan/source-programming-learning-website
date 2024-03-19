@@ -10,7 +10,7 @@ spring:
   # 支持 swagger3
   mvc:
     pathmatch:
-      matching-strategy: ant_path_matcher
+      matching-strategy: ant_path_matcher # 支持 swagger3 开启
   # session 配置
   session:
 #  开启分布式 session（须先配置 Redis）
@@ -95,5 +95,3 @@ cos:
     secretKey: xxx
     region: xxx
     bucket: xxx
-knife4j:
-  enable: true

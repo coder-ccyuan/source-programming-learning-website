@@ -8,8 +8,9 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="user-module" />
+        <module name="question-module" />
+        <module name="judge-module" />
         <module name="common-module" />
-        <module name="OJ-module" />
         <module name="API_gatway_module" />
         <module name="OJ-code-sandbox-module" />
         <module name="API-module" />
@@ -18,6 +19,7 @@
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="OJ" target="1.8" />
+      <module name="OJ-module" target="1.8" />
       <module name="test" target="1.8" />
     </bytecodeTargetLevel>
   </component>
@@ -29,7 +31,9 @@
       <module name="OJ-code-sandbox-module" options="-parameters" />
       <module name="OJ-module" options="-parameters" />
       <module name="common-module" options="-parameters" />
+      <module name="judge-module" options="-parameters" />
       <module name="open-gateway-module" options="-parameters" />
+      <module name="question-module" options="-parameters" />
       <module name="test" options="-parameters" />
       <module name="user-module" options="-parameters" />
     </option>

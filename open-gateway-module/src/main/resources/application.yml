@@ -21,6 +21,18 @@ spring:
             lb://api-service
           predicates:
             - Path=/api/API/**
+        - id: question-service
+          uri:
+            lb://question-service
+          predicates:
+            - Path=/api/question/**
+        - id: judge-service
+          uri:
+            lb://judge-service
+          predicates:
+            - Path=/api/judge/**
+  main:
+    allow-bean-definition-overriding: true
 knife4j:
   gateway:
     # ① 第一个配置，开启gateway聚合组件

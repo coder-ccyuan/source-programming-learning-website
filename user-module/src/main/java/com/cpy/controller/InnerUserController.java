@@ -7,15 +7,12 @@ import com.cpy.common.ResultUtils;
 import com.cpy.exception.BusinessException;
 import com.cpy.model.dto.user.UserSecretKeyRequest;
 import com.cpy.model.entity.User;
-import com.cpy.model.vo.LoginUserVO;
 import com.cpy.model.vo.UserVO;
 import com.cpy.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-
 import java.util.List;
 import java.util.Set;
 
@@ -38,15 +35,14 @@ public class InnerUserController {
     /**
      * 获取当前登录用户
      *
-     * @param request
+     * @param
      * @return
      */
     @GetMapping("/get/login")
-    public User getLoginUser(HttpServletRequest request) {
+    public BaseResponse<User> getLoginUser(HttpServletRequest request ) {
         // 先判断是否已登录
-        Object userObj = request.getSession().getAttribute(USER_LOGIN_STATE);
-        User currentUser = (User) userObj;
-        if (currentUser == null || currentUser.getId() == null) {
+        User user =(User) request.getSession().getAttribute(USER_LOGIN_STATE);
+        if (user == null || user.getId() == null) {
             throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
         }
         //从redis中取
@@ -54,41 +50,40 @@ public class InnerUserController {
 //        currentUser = this.getById(userId);
 
         // 从数据库查询（追求性能的话可以注释，直接走缓存）
-        long userId = currentUser.getId();
-        currentUser=userService.getById(userId);
-        if (currentUser == null) {
-            throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
+        long userId = user.getId();
+        user=userService.getById(userId);
+        if (user == null) {
+            throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR,"用户不存在");
         }
-        request.getSession().setAttribute(USER_LOGIN_STATE,currentUser);
-        return currentUser;
-    }
-    @GetMapping("/get/count")
-    public Long selectCount(QueryWrapper<User> queryWrapper){
-        long count = userService.count(queryWrapper);
-        return count;
+        return ResultUtils.success(user);
     }
     @GetMapping("/get/user")
-    public User getById(Long userId){
+    public BaseResponse<User> getById(@RequestParam Long userId){
         User user = userService.getById(userId);
-        return user;
+        return ResultUtils.success(user);
     }
-    @GetMapping("/get/userVo")
-    public UserVO getUserVO(User user){
+    @PostMapping("/get/userVo")
+    public BaseResponse<UserVO> getUserVO(@RequestBody User user){
         UserVO userVO = userService.getUserVO(user);
-        return userVO;
+        return ResultUtils.success(userVO);
     }
+
+    /**
+     *
+     * @param
+     * @return
+     */
     @GetMapping("/get/userPermitNull")
-    public User getLoginUserPermitNull(HttpServletRequest request){
+    public BaseResponse<User> getLoginUserPermitNull(HttpServletRequest request){
         User loginUserPermitNull = userService.getLoginUserPermitNull(request);
-        return loginUserPermitNull;
-    }
-    @GetMapping("/list/userId")
-    public List<User> listByIds(Set<Long> userIdSet){
+        return ResultUtils.success(loginUserPermitNull);    }
+    @PostMapping("/list/userId")
+    public BaseResponse<List<User>> listByIds(@RequestBody Set<Long> userIdSet){
         List<User> users = userService.listByIds(userIdSet);
-        return users;
+        return ResultUtils.success(users);
     }
     @PostMapping("/get/secretKey")
-    public String getSecretKeyByAccessKey(@RequestBody UserSecretKeyRequest request){
+    public BaseResponse<String > getSecretKeyByAccessKey(@RequestBody UserSecretKeyRequest request){
         if (request==null||request.getAccessKey()==null||request.getAccessKey().equals("")){
             return null;
         }
@@ -96,7 +91,6 @@ public class InnerUserController {
         userQueryWrapper.eq("accessKey",request.getAccessKey());
         User one = userService.getOne(userQueryWrapper);
         if (one==null)return null;
-        return one.getSecretKey();
-
+        return ResultUtils.success(one.getSecretKey());
     }
 }

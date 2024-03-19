@@ -56,13 +56,7 @@ public class InterfaceInformationServiceImpl extends ServiceImpl<InterfaceInform
         if (integer>0)return null;
         //返回数据
         InterfaceInformation interfaceInformation = new InterfaceInformation();
-        interfaceInformation.setName(addRequest.getName());
-        interfaceInformation.setRequestHead(addRequest.getRequestHead());
-        interfaceInformation.setResponseHead(addRequest.getResponseHead());
-        interfaceInformation.setUrl(addRequest.getUrl());
-        interfaceInformation.setUserId(addRequest.getUserId());
-        interfaceInformation.setMethod(addRequest.getMethod());
-        interfaceInformation.setStatus(addRequest.getStatus());
+        BeanUtil.copyProperties(addRequest,interfaceInformation);
         return interfaceInformation;
     }
 

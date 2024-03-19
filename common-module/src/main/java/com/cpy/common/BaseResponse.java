@@ -1,6 +1,7 @@
 package com.cpy.common;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
@@ -12,6 +13,7 @@ import java.io.Serializable;
  * @from <a href="https://cpy.icu">编程导航知识星球</a>
  */
 @Data
+@NoArgsConstructor
 public class BaseResponse<T> implements Serializable {
 
     private int code;

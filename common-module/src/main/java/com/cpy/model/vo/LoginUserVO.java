@@ -52,6 +52,10 @@ public class LoginUserVO implements Serializable {
      * token
      */
     private String token;
-
+    /**
+     * secretKey
+     */
+    private String secretKey;
+    private String accessKey;
     private static final long serialVersionUID = 1L;
 }

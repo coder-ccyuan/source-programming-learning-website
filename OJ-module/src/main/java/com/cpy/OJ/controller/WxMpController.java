@@ -28,8 +28,9 @@ import org.springframework.web.bind.annotation.RestController;
  * @author <a href="https://github.com/licpy">程序员鱼皮</a>
  * @from <a href="https://cpy.icu">编程导航知识星球</a>
  **/
-@RestController
-@RequestMapping("/")
+//todo 开启微信公众controller
+//@RestController
+//@RequestMapping("/")
 @Slf4j
 public class WxMpController {
 

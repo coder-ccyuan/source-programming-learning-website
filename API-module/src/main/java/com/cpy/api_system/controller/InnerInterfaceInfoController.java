@@ -2,7 +2,9 @@ package com.cpy.api_system.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.cpy.api_system.service.InterfaceInformationService;
+import com.cpy.common.BaseResponse;
 import com.cpy.common.ErrorCode;
+import com.cpy.common.ResultUtils;
 import com.cpy.exception.BusinessException;
 import com.cpy.model.dto.interfaceInfo.InterfaceInformationQueryRequest;
 import com.cpy.model.entity.InterfaceInformation;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.annotation.Resource;
+import java.util.Base64;
 
 /**
  * @Author:成希德
@@ -26,7 +29,7 @@ public class InnerInterfaceInfoController {
      * @return
      */
     @PostMapping("/query/url")
-    public InterfaceInformation queryByUrl(@RequestBody InterfaceInformationQueryRequest queryRequest){
+    public BaseResponse<InterfaceInformation> queryByUrl(@RequestBody InterfaceInformationQueryRequest queryRequest){
         //校验数据是否为空
         if (queryRequest==null)throw new BusinessException(ErrorCode.PARAMS_ERROR);
         String url=queryRequest.getUrl();
@@ -34,6 +37,6 @@ public class InnerInterfaceInfoController {
         QueryWrapper<InterfaceInformation> qw = new QueryWrapper<>();
         qw.eq("url",url);
         InterfaceInformation interfaceInformation = interfaceInformationService.getOne(qw);
-        return interfaceInformation;
+        return ResultUtils.success(interfaceInformation);
     }
 }

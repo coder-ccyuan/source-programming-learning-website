@@ -83,7 +83,10 @@ ___
     ```
   - 要给每个服务取个唯一的context-path，用于区分服务，否则会发生*无法获取接口错误*
   因为默认的请求的是`{host:}{port}/{context-path}/v2/api-docs?group=default`
-  没有context-path的话，无法区分
+  没有 context-path 的话，无法区分
+  - 记录一个现象
+    - 聚合聚合文档403错误，原因是open-gateway 先启用，没有读取到其他服务配置
+    - 解决方法是最后启动
 - 分布式登录的各服务的相对路径要统一 √
   - 配置path，且配置要一致，否则访问一个服务会产生多个SESSION
   - ```yaml
@@ -94,6 +97,100 @@ ___
     timeout: 2592000
     path: /api
     ```
+___
+### 3.17
+
+- 记录一个 bug
+  - 使用 openFeign 远程调用的时候传递的参数是`QueryWrapper`类型时无法进行json相互转化，
+目前没有解决方案，所以在使用openFeign进行远程调用时尽量传递简单对象
+- openFeign 的注意事项
+  - 参数一定要加 @RequestParam 或 @RequestBody 否者会报错
+- 将 OJ-module 拆分为 Question module 模块 和 judge 模块 √
+- 在 open-gateway 实现全局跨域 √
+- 在 open-gateway 实现全局过滤 *inner* √
+- openFeign 无法直接传递 HttpServletRequest
+  - 原因是 openFeign 在请求服务时会生成一个新的 requestHeader 造成原先的 Header 信息丢失
+    -解决方案： 使用 **RequestInterceptor** (注：客户端无需传递 httpServlet 参数)
+    - ```java
+      @Configuration
+      public class RequestFeignConfig {
+      @Bean("requestInterceptor")
+      public RequestInterceptor requestInterceptor() {
+
+        RequestInterceptor requestInterceptor = new RequestInterceptor() {
+            @Override
+            public void apply(RequestTemplate template) {
+                //1、使用RequestContextHolder拿到刚进来的请求数据
+                ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+
+                if (requestAttributes != null) {
+                    //老请求
+                    HttpServletRequest request = requestAttributes.getRequest();
+                    if (request != null) {
+                        //2、同步请求头的数据（主要是cookie）
+                        //把老请求的cookie值放到新请求上来，进行一个同步
+                        String cookie = request.getHeader("Cookie");
+                        template.header("Cookie", cookie);
+                    }
+                }
+            }
+        };
+
+        return requestInterceptor;
+      }
+       }
+      ```
+___
+### 3.18
+- 记录一个错误 ``java.lang.IllegalArgumentException: Body parameter 0 was null``
+  - 原因：feignClient 使用 Post 必须携带请求体，没携带报错
+  - 解决：使用 Get 请求
+- 实现 openFeign 调用服务时，被调用方出现异常，将结果直接返回前端 √
+  - 使用 Encoder 对返回对象手动自定义解码，统一获取数据和处理异常并返回给前端
+  - 注意点：``BaseResponse``要有无参构造器，反射需要
+  - ```java
+    package com.cpy.clientApi.Decoder;
+
+    import com.cpy.common.BaseResponse;
+    import com.cpy.exception.BusinessException;
+    import com.fasterxml.jackson.databind.ObjectMapper;
+    import com.fasterxml.jackson.databind.type.TypeFactory;
+    import feign.FeignException;
+    import feign.Response;
+    import feign.codec.Decoder;
+    import java.io.IOException;
+    import java.lang.reflect.Type;
+    
+    /**
+    * openFeign 自定义解码器
+      * @Author:成希德
+        */
+        public class MyDecoder implements Decoder {
+    
+        private ObjectMapper objectMapper = new ObjectMapper();
+    
+        @Override
+        public Object decode(Response response, Type type) throws FeignException, IOException {
+    
+             TypeFactory typeFactory = objectMapper.getTypeFactory();
+    
+             BaseResponse baseResponse = objectMapper.readValue(response.body().asInputStream(),
+                     typeFactory.constructParametricType(BaseResponse.class, typeFactory.constructType(type)));
+    
+             if (type instanceof BaseResponse) {
+                 return baseResponse;
+             }
+    
+             if (baseResponse.getCode()==0) {
+                 return baseResponse.getData();
+             }
+    
+             throw new BusinessException(baseResponse.getCode(),baseResponse.getMessage());
+        }
+        }
+      ```
+- 判题是比较重的操作，使用 RabbitMQ 使服务模块和判题模块解耦
+  - 
 
 
 
