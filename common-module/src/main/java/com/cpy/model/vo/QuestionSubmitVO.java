@@ -96,7 +96,7 @@ public class QuestionSubmitVO implements Serializable {
             return null;
         }
         QuestionSubmitVO questionSubmitVO = new QuestionSubmitVO();
-        BeanUtils.copyProperties(questionSubmit, questionSubmitVO);
+        BeanUtils.copyProperties(questionSubmit, questionSubmitVO,"judgeInfo");
         questionSubmitVO.setJudgeInfo(GSON.fromJson(questionSubmit.getJudgeInfo(), new TypeToken<JudgeInfo>() {
         }.getType()));
         return questionSubmitVO;

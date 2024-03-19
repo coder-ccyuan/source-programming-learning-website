@@ -20,9 +20,8 @@ ___
 - Spring Gateway 网关
 - RabbitMQ 消息队列
 - redis 分布式session 缓存
-
 ## 开发日志
-___
+___ 
 ### 3.15
 - 创建User 模块 √
 - 将单体项目拆分模块 √
@@ -189,8 +188,17 @@ ___
         }
         }
       ```
-- 判题是比较重的操作，使用 RabbitMQ 使服务模块和判题模块解耦
-  - 
+- 后端配置跨域只能配置一个，重复配置会导致跨域失败
+___
+### 8.19
+- 判题是比较重的操作，使用 RabbitMQ 使服务模块和判题模块解耦 √
+  - 下载 rabbitMq 服务端 <https://blog.csdn.net/Relievedz/article/details/131081440>
+  - 引入 rabbitMq 依赖,使用 SpringAMQP 封装好的 RabbitMQ 模板
+  - 生成 exchange queue 并让 judge 模块 监听 queue
+- 记录一个坑
+  - 如果要想通过 bean 的注入，并生成 queue exchange ... 要在 consumer 
+服务里注入，否者生成不了
+
 
 
 

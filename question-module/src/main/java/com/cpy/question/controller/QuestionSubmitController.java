@@ -8,6 +8,7 @@ import com.cpy.common.ErrorCode;
 import com.cpy.common.ResultUtils;
 import com.cpy.exception.BusinessException;
 import com.cpy.exception.ThrowUtils;
+import com.cpy.model.dto.questionSubmit.JudgeInfo;
 import com.cpy.model.dto.questionSubmit.QuestionSubmitAddRequest;
 import com.cpy.model.dto.questionSubmit.QuestionSubmitQueryRequest;
 import com.cpy.model.entity.QuestionSubmit;
@@ -17,6 +18,7 @@ import com.cpy.question.service.QuestionSubmitService;
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -51,7 +53,7 @@ public class QuestionSubmitController {
      * @return
      */
     @PostMapping("/add")
-    public BaseResponse<QuestionSubmitVO> addQuestionSubmit(@RequestBody QuestionSubmitAddRequest questionSubmitAddRequest, HttpServletRequest request) {
+    public BaseResponse<Long> addQuestionSubmit(@RequestBody QuestionSubmitAddRequest questionSubmitAddRequest, HttpServletRequest request) {
         if (questionSubmitAddRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
@@ -69,9 +71,9 @@ public class QuestionSubmitController {
         //添加数据
         boolean result = questionSubmitService.save(questionSubmit);
         ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
-        //执行代码
-        QuestionSubmitVO questionSubmitVO = questionSubmitService.runCode(questionSubmit);
-        return ResultUtils.success(questionSubmitVO);
+        //进行判题
+        questionSubmitService.judge(questionSubmit.getId());
+        return ResultUtils.success(questionSubmit.getId());
     }
 
     /**
@@ -98,5 +100,16 @@ public class QuestionSubmitController {
         questionSubmitQueryWrapper.eq("userId", userClient.getLoginUser().getId());
         Page<QuestionSubmit> page = questionSubmitService.page(new Page<>(current, pageSize), questionSubmitQueryWrapper);
         return ResultUtils.success(questionSubmitService.getQuestionSubmitVOPage(page));
+    }
+    @GetMapping("/get/vo")
+    public BaseResponse<QuestionSubmitVO> getQuestionVOById(@RequestParam long id) throws InterruptedException {
+        //线程睡2s,方便判题
+        Thread.sleep(2000);
+        if (id<0)throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        QuestionSubmit questionSubmit = questionSubmitService.getById(id);
+        if (questionSubmit==null)throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        QuestionSubmitVO questionSubmitVO = QuestionSubmitVO.objToVo(questionSubmit);
+        if (questionSubmitVO==null)throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        return ResultUtils.success(questionSubmitVO);
     }
 }

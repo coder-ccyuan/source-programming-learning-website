@@ -8,5 +8,5 @@ public interface QuestionSubmitService extends IService<QuestionSubmit> {
     void validQuestionSubmit(QuestionSubmit questionSubmit);
 
     Page<QuestionSubmitVO> getQuestionSubmitVOPage(Page<QuestionSubmit> page);
-    QuestionSubmitVO runCode(QuestionSubmit questionSubmit);
+    void judge(long id);
 }
