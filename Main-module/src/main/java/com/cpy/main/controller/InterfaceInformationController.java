@@ -107,7 +107,7 @@ public class InterfaceInformationController {
      * @return
      */
     @PostMapping("/query/url")
-    public InterfaceInformation queryByUrl(@RequestBody InterfaceInformationQueryRequest queryRequest, HttpServletRequest request){
+    public BaseResponse<InterfaceInformation> queryByUrl(@RequestBody InterfaceInformationQueryRequest queryRequest, HttpServletRequest request){
         //校验数据是否为空
         if (queryRequest==null)throw new BusinessException(ErrorCode.PARAMS_ERROR);
         String url=queryRequest.getUrl();
@@ -118,8 +118,7 @@ public class InterfaceInformationController {
         if(list==null||list.size()>1||list.size()==0){
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-
-        return list.get(0);
+        return ResultUtils.success(list.get(0));
     }
     @PostMapping("/update")
     public BaseResponse<Boolean> update(@RequestBody InterfaceInformationUpdateRequest updateRequest, HttpServletRequest request){
@@ -332,5 +331,12 @@ public class InterfaceInformationController {
         }catch ( IOException e){
             throw e;
         }
+    }
+    @GetMapping("/get/interface")
+    public BaseResponse<InterfaceInformation> getInterfaceInformationById(Long id){
+        if (id<0||id==null)throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        InterfaceInformation interfaceInformation = interfaceInformationService.getById(id);
+        if (interfaceInformation==null)throw new BusinessException(ErrorCode.PARAMS_ERROR,"接口不存在");
+        return ResultUtils.success(interfaceInformation);
     }
 }

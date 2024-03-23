@@ -1,9 +1,9 @@
 package com.cpy.main.judge.codeSandBox.imp;
 
 import com.cpy.main.judge.codeSandBox.CodeSandBox;
-import com.cpy.main.judge.codeSandBox.model.ExecuteCodeRequest;
-import com.cpy.main.judge.codeSandBox.model.ExecuteCodeResponse;
 import com.cpy.model.dto.questionSubmit.JudgeInfo;
+import com.cpy.model.dto.judge.ExecuteCodeRequest;
+import com.cpy.model.dto.judge.ExecuteCodeResponse;
 
 /**
  * @Author:成希德

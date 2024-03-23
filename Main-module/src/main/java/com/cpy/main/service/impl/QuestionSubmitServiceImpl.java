@@ -1,8 +1,8 @@
 package com.cpy.main.service.impl;
 
 import com.cpy.main.judge.codeSandBox.CodeSandBox;
-import com.cpy.main.judge.codeSandBox.model.ExecuteCodeRequest;
-import com.cpy.main.judge.codeSandBox.model.ExecuteCodeResponse;
+import com.cpy.model.dto.judge.ExecuteCodeRequest;
+import com.cpy.model.dto.judge.ExecuteCodeResponse;
 import com.cpy.main.mapper.QuestionSubmitMapper;
 import com.cpy.main.service.QuestionService;
 import com.cpy.main.service.QuestionSubmitService;
@@ -79,7 +79,9 @@ public class QuestionSubmitServiceImpl extends ServiceImpl<QuestionSubmitMapper,
             Long questionId = record.getQuestionId();
             Long userId = record.getUserId();
             Question question = questionService.getById(questionId);
-            QuestionVO questionVO = QuestionVO.objToVo(question);
+            QuestionVO questionVO = new QuestionVO();
+            BeanUtil.copyProperties(question,questionVO,"judgeConfig","judgeCase");
+            if (question==null)questionVO.setTitle("题目已删除");
             User user = userService.getById(userId);
             UserVO userVO = new UserVO();
             BeanUtil.copyProperties(user, userVO);

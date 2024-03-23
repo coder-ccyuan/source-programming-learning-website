@@ -1,16 +1,18 @@
 package com.cpy.apigateway;
 
 
+import cn.hutool.core.lang.TypeReference;
 import cn.hutool.crypto.digest.DigestAlgorithm;
 import cn.hutool.crypto.digest.Digester;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.json.JSONUtil;
-import com.cpy.apigateway.model.BaseResponse;
-import com.cpy.apigateway.model.InterfaceInformation;
-import com.cpy.apigateway.model.InterfaceInformationQueryRequest;
-import com.cpy.apigateway.model.UserSecretKeyRequest;
+import com.cpy.common.BaseResponse;
+import com.cpy.model.dto.interfaceInfo.InterfaceInformationQueryRequest;
+import com.cpy.model.dto.user.UserSecretKeyRequest;
+import com.cpy.model.entity.InterfaceInformation;
 import lombok.extern.slf4j.Slf4j;
 import org.reactivestreams.Publisher;
+import org.springframework.beans.BeanUtils;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
@@ -42,6 +44,15 @@ public class CustomGlobalFilter implements GlobalFilter, Ordered {
      */
     public static final List<String> WHITE_LIST = Arrays.asList("127.0.0.1");
 
+    /**
+     * 获取 secretary 的url
+     */
+    public static final String REMOTE_GET_SECRET_KEY_URL="http://localhost:8090/api/user/get/secretKey";
+
+    /**
+     * 测试接口是否存在url
+     */
+    public static final String TEST_API_EXIST_URL="http://localhost:8090/api/interfaceInfo/query/url";
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         ServerHttpResponse response = exchange.getResponse();
@@ -90,11 +101,14 @@ public class CustomGlobalFilter implements GlobalFilter, Ordered {
         InterfaceInformationQueryRequest interfaceInformationQueryRequest = new InterfaceInformationQueryRequest();
         interfaceInformationQueryRequest.setUrl(url);
         String s1 = JSONUtil.toJsonStr(interfaceInformationQueryRequest);
-        String res = HttpRequest.post("http://localhost:8092/interfaceInfo/query/url").body(s1).execute().body();
-        InterfaceInformation interfaceInformation = JSONUtil.toBean(res, InterfaceInformation.class);
-        if (interfaceInformation.getStatus()==1){
+        String res = HttpRequest.post(TEST_API_EXIST_URL).body(s1).execute().body();
+        //泛型，正常转换
+        BaseResponse<InterfaceInformation> baseResponse= JSONUtil.toBean(res,new TypeReference<BaseResponse<InterfaceInformation>>(){},false);
+        if (baseResponse.getCode()!=0){
             handlerInterfaceNotExist(response);
         }
+        InterfaceInformation interfaceInformation = baseResponse.getData();
+        if (interfaceInformation.getStatus()==1)handlerInterfaceNotExist(response);
         //5.请求转发调用接口
         try {
             ServerHttpResponse originalResponse = exchange.getResponse();
@@ -112,6 +126,7 @@ public class CustomGlobalFilter implements GlobalFilter, Ordered {
                                 //6.响应日志
                                 log.info("响应：" + response.getStatusCode());
                                 //todo 7.调用成功更改调用次数
+                                Long interfaceInformationId = interfaceInformation.getId();
 
                                 byte[] content = new byte[dataBuffer.readableByteCount()];
                                 dataBuffer.read(content);
@@ -161,12 +176,12 @@ public class CustomGlobalFilter implements GlobalFilter, Ordered {
         return response.setComplete();
     }
     public String getSecretKey(String accessKey){
-        String url="http://localhost:8092/user/get/secretKey";
+//        String url="http://localhost:8090/api/user/get/secretKey";
         UserSecretKeyRequest userSecretKeyRequest = new UserSecretKeyRequest();
         userSecretKeyRequest.setAccessKey(accessKey);
-        String body = HttpRequest.post(url).body(JSONUtil.toJsonStr(userSecretKeyRequest)).execute().body();
-        BaseResponse baseResponse = JSONUtil.toBean(body, BaseResponse.class);
-        if (baseResponse.getCode()!=20000)return "";
+        String body = HttpRequest.post(REMOTE_GET_SECRET_KEY_URL).body(JSONUtil.toJsonStr(userSecretKeyRequest)).execute().body();
+        BaseResponse<String> baseResponse = JSONUtil.toBean(body, BaseResponse.class);
+        if (baseResponse.getCode()!=0)return "";
         return baseResponse.getData();
     }
 }

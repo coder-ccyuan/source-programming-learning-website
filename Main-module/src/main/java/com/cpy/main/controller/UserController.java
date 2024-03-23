@@ -1,5 +1,6 @@
 package com.cpy.main.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.cpy.common.BaseResponse;
 import com.cpy.common.DeleteRequest;
@@ -9,15 +10,11 @@ import com.cpy.constant.UserConstant;
 import com.cpy.exception.BusinessException;
 import com.cpy.exception.ThrowUtils;
 import com.cpy.main.annotation.AuthCheck;
-import com.cpy.model.dto.user.UserAddRequest;
-import com.cpy.model.dto.user.UserLoginRequest;
-import com.cpy.model.dto.user.UserQueryRequest;
-import com.cpy.model.dto.user.UserRegisterRequest;
-import com.cpy.model.dto.user.UserUpdateMyRequest;
-import com.cpy.model.dto.user.UserUpdateRequest;
+import com.cpy.model.dto.user.*;
 import com.cpy.model.vo.LoginUserVO;
 import com.cpy.model.vo.UserVO;
 import com.cpy.main.service.UserService;
+
 import java.util.List;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -35,7 +32,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * 用户接口
- *
  */
 @RestController
 @RequestMapping("/user")
@@ -77,7 +73,7 @@ public class UserController {
      * @return
      */
     @PostMapping("/login")
-    public BaseResponse<LoginUserVO> userLogin(@RequestBody UserLoginRequest userLoginRequest, HttpServletRequest request,HttpServletResponse response) {
+    public BaseResponse<LoginUserVO> userLogin(@RequestBody UserLoginRequest userLoginRequest, HttpServletRequest request, HttpServletResponse response) {
         if (userLoginRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
@@ -86,7 +82,7 @@ public class UserController {
         if (StringUtils.isAnyBlank(userAccount, userPassword)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        LoginUserVO loginUserVO = userService.userLogin(userAccount, userPassword, request,response);
+        LoginUserVO loginUserVO = userService.userLogin(userAccount, userPassword, request, response);
         return ResultUtils.success(loginUserVO);
     }
 
@@ -191,7 +187,7 @@ public class UserController {
     @PostMapping("/update")
     @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
     public BaseResponse<Boolean> updateUser(@RequestBody UserUpdateRequest userUpdateRequest,
-            HttpServletRequest request) {
+                                            HttpServletRequest request) {
         if (userUpdateRequest == null || userUpdateRequest.getId() == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
@@ -244,7 +240,7 @@ public class UserController {
     @PostMapping("/list/page")
     @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
     public BaseResponse<Page<User>> listUserByPage(@RequestBody UserQueryRequest userQueryRequest,
-            HttpServletRequest request) {
+                                                   HttpServletRequest request) {
         long current = userQueryRequest.getCurrent();
         long size = userQueryRequest.getPageSize();
         Page<User> userPage = userService.page(new Page<>(current, size),
@@ -261,7 +257,7 @@ public class UserController {
      */
     @PostMapping("/list/page/vo")
     public BaseResponse<Page<UserVO>> listUserVOByPage(@RequestBody UserQueryRequest userQueryRequest,
-            HttpServletRequest request) {
+                                                       HttpServletRequest request) {
         if (userQueryRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
@@ -288,7 +284,7 @@ public class UserController {
      */
     @PostMapping("/update/my")
     public BaseResponse<Boolean> updateMyUser(@RequestBody UserUpdateMyRequest userUpdateMyRequest,
-            HttpServletRequest request) {
+                                              HttpServletRequest request) {
         if (userUpdateMyRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
@@ -299,5 +295,16 @@ public class UserController {
         boolean result = userService.updateById(user);
         ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
         return ResultUtils.success(true);
+    }
+
+    @PostMapping("/get/secretKey")
+    public BaseResponse<String> getSecretKey(@RequestBody UserSecretKeyRequest request) {
+        if (request==null)throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        String accessKey=request.getAccessKey();
+        if (accessKey == null) throw new BusinessException(ErrorCode.PARAMS_ERROR,"accessKey为空");
+        QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
+        userQueryWrapper.eq("accessKey", accessKey);
+        User one = userService.getOne(userQueryWrapper);
+        return ResultUtils.success(one.getSecretKey());
     }
 }

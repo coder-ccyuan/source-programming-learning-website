@@ -1,7 +1,8 @@
 package com.cpy.main.judge.codeSandBox;
 
-import com.cpy.main.judge.codeSandBox.model.ExecuteCodeRequest;
-import com.cpy.main.judge.codeSandBox.model.ExecuteCodeResponse;
+
+import com.cpy.model.dto.judge.ExecuteCodeRequest;
+import com.cpy.model.dto.judge.ExecuteCodeResponse;
 
 /**
  * @Author:成希德

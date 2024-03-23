@@ -11,4 +11,4 @@ spring:
         - id: path_route
           uri: http://localhost:8091
           predicates:
-                  - Path=/sandbox/*
+           - Path=/sandbox/*

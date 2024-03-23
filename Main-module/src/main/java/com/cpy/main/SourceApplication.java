@@ -14,7 +14,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
  * @from <a href="https://cpy.icu">编程导航知识星球</a>
  */
 @SpringBootApplication
-@ComponentScan(value = {"com.cpy.config","com.cpy.main","com.cpy.utils"})
+@ComponentScan(value = {"com.cpy.config","com.cpy.main","com.cpy.utils","com.cpy.exception"})
 @MapperScan("com.cpy.main.mapper")
 @EnableScheduling
 @EnableAspectJAutoProxy(proxyTargetClass = true, exposeProxy = true)

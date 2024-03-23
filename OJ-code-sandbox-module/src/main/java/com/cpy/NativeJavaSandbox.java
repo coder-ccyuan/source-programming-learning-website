@@ -20,8 +20,8 @@ import java.util.List;
 public class NativeJavaSandbox implements CodeSandBox {
     public static String GLOBAL_CODE_DIR = "tmp";
     public static String GLOBAL_CODE_EXE_FILE = "Main.java";
-    public static String MY_SECURITY_MANAGER="main-code-sandbox-module/src/main/resources/security";
-    public static Long TIME_OUT = 10000L;
+    public static String MY_SECURITY_MANAGER="OJ-code-sandbox-module/src/main/resources/security";
+    public static Long TIME_OUT = 3000L;
 
     @Override
     public ExecuteCodeResponse executeCode(ExecuteCodeRequest request) {
