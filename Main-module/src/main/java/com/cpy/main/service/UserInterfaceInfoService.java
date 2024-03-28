@@ -13,4 +13,5 @@ import com.cpy.model.entity.UserInterfaceInfo;
 public interface UserInterfaceInfoService extends IService<UserInterfaceInfo> {
     public UserInterfaceInfo verify(UserInterfaceInfoAddRequest addRequest);
     public UserInterfaceInfo verify(UserInterfaceInfoUpdateRequest updateRequest);
+    public UserInterfaceInfo queryById(Long id);
 }

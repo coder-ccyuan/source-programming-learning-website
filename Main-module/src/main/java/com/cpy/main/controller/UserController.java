@@ -24,6 +24,7 @@ import com.cpy.model.entity.User;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -41,7 +42,8 @@ public class UserController {
     @Resource
     private UserService userService;
 
-
+    @Resource
+    StringRedisTemplate stringRedisTemplate;
     // region 登录相关
 
     /**
@@ -174,6 +176,8 @@ public class UserController {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         boolean b = userService.removeById(deleteRequest.getId());
+        //删除缓存
+        stringRedisTemplate.delete(UserConstant.CACHE_USER_KEY+deleteRequest.getId());
         return ResultUtils.success(b);
     }
 
@@ -195,6 +199,8 @@ public class UserController {
         BeanUtils.copyProperties(userUpdateRequest, user);
         boolean result = userService.updateById(user);
         ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
+        //删除缓存
+        stringRedisTemplate.delete(UserConstant.CACHE_USER_KEY+user.getId());
         return ResultUtils.success(true);
     }
 
@@ -211,7 +217,7 @@ public class UserController {
         if (id <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        User user = userService.getById(id);
+        User user = userService.queryById(id);
         ThrowUtils.throwIf(user == null, ErrorCode.NOT_FOUND_ERROR);
         return ResultUtils.success(user);
     }
@@ -294,6 +300,8 @@ public class UserController {
         user.setId(loginUser.getId());
         boolean result = userService.updateById(user);
         ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
+        //删除缓存
+        stringRedisTemplate.delete(UserConstant.CACHE_USER_KEY+loginUser.getId());
         return ResultUtils.success(true);
     }
 
@@ -307,4 +315,5 @@ public class UserController {
         User one = userService.getOne(userQueryWrapper);
         return ResultUtils.success(one.getSecretKey());
     }
+
 }

@@ -64,7 +64,9 @@ public class SandboxUtils {
             StringBuilder stringBuilder = new StringBuilder();
             String readLine = "";
             //todo 监控程序内存
-            Process exec = Runtime.getRuntime().exec(exeCmd);
+            //linux 环境下必须
+            String[] cmd = new String[]{"sh","-c",exeCmd};
+            Process exec = Runtime.getRuntime().exec(cmd);
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(exec.getInputStream()));
             BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(exec.getOutputStream()));
             //写入控制台

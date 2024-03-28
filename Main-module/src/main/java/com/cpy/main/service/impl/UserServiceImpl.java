@@ -1,5 +1,6 @@
 package com.cpy.main.service.impl;
 
+import static com.cpy.constant.UserConstant.CACHE_USER_KEY;
 import static com.cpy.constant.UserConstant.USER_LOGIN_STATE;
 
 import cn.hutool.core.util.RandomUtil;
@@ -20,6 +21,7 @@ import com.cpy.utils.SqlUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -185,17 +187,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if (currentUser == null || currentUser.getId() == null) {
             throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
         }
-        //从redis中取
-//                Long userId = redisUtils.getUserIdFromRedis(token);
-//        currentUser = this.getById(userId);
-
         // 从数据库查询（追求性能的话可以注释，直接走缓存）
-        long userId = currentUser.getId();
-        currentUser=getById(userId);
+//        long userId = currentUser.getId();
+//        currentUser=getById(userId);
+        currentUser = this.queryById(currentUser.getId());
         if (currentUser == null) {
             throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
         }
-        request.getSession().setAttribute(USER_LOGIN_STATE,currentUser);
+        request.getSession().setAttribute(USER_LOGIN_STATE, currentUser);
         return currentUser;
     }
 
@@ -308,5 +307,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         queryWrapper.orderBy(SqlUtils.validSortField(sortField), sortOrder.equals(CommonConstant.SORT_ORDER_ASC),
                 sortField);
         return queryWrapper;
+    }
+
+    @Override
+    public User queryById(Long id) {
+        User user = redisUtils.queryWithPassThrough(CACHE_USER_KEY, id, User.class, this::getById, RandomUtil.randomLong(10000), TimeUnit.SECONDS);
+        return user;
     }
 }

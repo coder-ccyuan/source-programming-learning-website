@@ -1,5 +1,8 @@
 package com.cpy.main.service.impl;
 
+import cn.hutool.core.util.RandomUtil;
+import com.cpy.constant.QuestionConstant;
+import com.cpy.constant.QuestionSubmitConstant;
 import com.cpy.main.judge.codeSandBox.CodeSandBox;
 import com.cpy.model.dto.judge.ExecuteCodeRequest;
 import com.cpy.model.dto.judge.ExecuteCodeResponse;
@@ -24,6 +27,7 @@ import com.cpy.model.entity.User;
 import com.cpy.model.vo.QuestionSubmitVO;
 import com.cpy.model.vo.QuestionVO;
 import com.cpy.model.vo.UserVO;
+import com.cpy.utils.RedisUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -31,6 +35,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author 成希德
@@ -46,6 +51,8 @@ public class QuestionSubmitServiceImpl extends ServiceImpl<QuestionSubmitMapper,
     UserService userService;
     @Resource
     CodeSandBox codeSandBox;
+    @Resource
+    private RedisUtils redisUtils;
 
     @Override
     public void validQuestionSubmit(QuestionSubmit questionSubmit) {
@@ -184,6 +191,12 @@ public class QuestionSubmitServiceImpl extends ServiceImpl<QuestionSubmitMapper,
         questionSubmitVO.setStatus(questionSubmit.getStatus());
         questionSubmitVO.setUserVO(userService.getUserVO(userService.getById(questionSubmit.getUserId())));
         return questionSubmitVO;
+    }
+
+    @Override
+    public QuestionSubmit queryById(Long id) {
+        QuestionSubmit questionSubmit = redisUtils.queryWithPassThrough(QuestionSubmitConstant.CACHE_QUESTION_SUBMIT_KEY, id, QuestionSubmit.class, this::getById, RandomUtil.randomLong(10000), TimeUnit.SECONDS);
+        return questionSubmit;
     }
 }
 

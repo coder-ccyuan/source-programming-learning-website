@@ -2,8 +2,8 @@ package com.cpy.main.sandbox;
 
 import cn.hutool.http.HttpRequest;
 import cn.hutool.json.JSONUtil;
-import com.cpy.main.judge.codeSandBox.model.ExecuteCodeRequest;
-import com.cpy.main.judge.codeSandBox.model.ExecuteCodeResponse;
+import com.cpy.model.dto.judge.ExecuteCodeRequest;
+import com.cpy.model.dto.judge.ExecuteCodeResponse;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;

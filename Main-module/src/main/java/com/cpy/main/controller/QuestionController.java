@@ -1,5 +1,6 @@
 package com.cpy.main.controller;
 
+import cn.hutool.core.util.RandomUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.cpy.common.BaseResponse;
 import com.cpy.common.DeleteRequest;
@@ -15,14 +16,19 @@ import com.cpy.model.dto.question.*;
 import com.cpy.model.entity.Question;
 import com.cpy.model.entity.User;
 import com.cpy.model.vo.QuestionVO;
+import com.cpy.utils.RedisUtils;
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import static com.cpy.constant.QuestionConstant.CACHE_QUESTION_KEY;
 
 /**
  * 题目接口
@@ -37,7 +43,10 @@ public class QuestionController {
 
     @Resource
     private UserService userService;
-
+    @Resource
+    RedisUtils redisUtils;
+    @Resource
+    StringRedisTemplate stringRedisTemplate;
     private final static Gson GSON = new Gson();
 
     // region 增删改查
@@ -62,10 +71,10 @@ public class QuestionController {
         if (tags != null) {
             question.setTags(GSON.toJson(tags));
         }
-        if (judgeCase!=null){
+        if (judgeCase != null) {
             question.setJudgeCase(GSON.toJson(judgeCase));
         }
-        if (judgeConfig!=null){
+        if (judgeConfig != null) {
             question.setJudgeConfig(GSON.toJson(judgeConfig));
         }
         questionService.validQuestion(question, true);
@@ -94,13 +103,15 @@ public class QuestionController {
         User user = userService.getLoginUser(request);
         long id = deleteRequest.getId();
         // 判断是否存在
-        Question oldQuestion = questionService.getById(id);
+        Question oldQuestion = questionService.queryById(id);
         ThrowUtils.throwIf(oldQuestion == null, ErrorCode.NOT_FOUND_ERROR);
         // 仅本人或管理员可删除
         if (!oldQuestion.getUserId().equals(user.getId()) && !userService.isAdmin(request)) {
             throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
         }
         boolean b = questionService.removeById(id);
+        //删除缓存
+        stringRedisTemplate.delete(CACHE_QUESTION_KEY + id);
         return ResultUtils.success(b);
     }
 
@@ -124,19 +135,21 @@ public class QuestionController {
         if (tags != null) {
             question.setTags(GSON.toJson(tags));
         }
-        if (judgeCase!=null){
+        if (judgeCase != null) {
             question.setJudgeCase(GSON.toJson(judgeCase));
         }
-        if (judgeConfig!=null){
+        if (judgeConfig != null) {
             question.setJudgeConfig(GSON.toJson(judgeConfig));
         }
         // 参数校验
         questionService.validQuestion(question, true);
         long id = questionUpdateRequest.getId();
         // 判断是否存在
-        Question oldQuestion = questionService.getById(id);
+        Question oldQuestion = questionService.queryById(id);
         ThrowUtils.throwIf(oldQuestion == null, ErrorCode.NOT_FOUND_ERROR);
         boolean result = questionService.updateById(question);
+        //删除缓存
+        stringRedisTemplate.delete(CACHE_QUESTION_KEY + id);
         return ResultUtils.success(result);
     }
 
@@ -151,15 +164,16 @@ public class QuestionController {
         if (id <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        Question question = questionService.getById(id);
+        //缓存中查询
+        Question question = questionService.queryById(id);
         if (question == null) {
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
         }
         return ResultUtils.success(questionService.getQuestionVO(question, request));
     }
+
     /**
      * 分页获取列表（封装类）
-     *
      *
      * @param questionQueryRequest
      * @param request
@@ -167,7 +181,7 @@ public class QuestionController {
      */
     @PostMapping("/list/page/vo")
     public BaseResponse<Page<QuestionVO>> listQuestionVOByPage(@RequestBody QuestionQueryRequest questionQueryRequest,
-            HttpServletRequest request) {
+                                                               HttpServletRequest request) {
         long current = questionQueryRequest.getCurrent();
         long size = questionQueryRequest.getPageSize();
         // 限制爬虫
@@ -186,7 +200,7 @@ public class QuestionController {
      */
     @PostMapping("/my/list/page/vo")
     public BaseResponse<Page<QuestionVO>> listMyQuestionVOByPage(@RequestBody QuestionQueryRequest questionQueryRequest,
-            HttpServletRequest request) {
+                                                                 HttpServletRequest request) {
         if (questionQueryRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
@@ -246,7 +260,7 @@ public class QuestionController {
 //        User loginUser = userService.getLoginUser(request);
 //        long id = questionEditRequest.getId();
 //        // 判断是否存在
-//        Question oldQuestion = questionService.getById(id);
+//        Question oldQuestion = questionService.queryById(id);
 //        ThrowUtils.throwIf(oldQuestion == null, ErrorCode.NOT_FOUND_ERROR);
 //        // 仅本人或管理员可编辑
 //        if (!oldQuestion.getUserId().equals(loginUser.getId()) && !userService.isAdmin(loginUser)) {

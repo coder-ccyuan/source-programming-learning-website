@@ -52,4 +52,8 @@ public interface QuestionService extends IService<Question> {
      * @return
      */
     Page<QuestionVO> getQuestionVOPage(Page<Question> questionPage, HttpServletRequest request);
+    /**
+     * 通过id从redis中查询
+     */
+    Question queryById(Long id);
 }

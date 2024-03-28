@@ -6,6 +6,8 @@ import com.cpy.common.BaseResponse;
 import com.cpy.common.DeleteRequest;
 import com.cpy.common.ErrorCode;
 import com.cpy.common.ResultUtils;
+import com.cpy.constant.InterfaceInfoConstant;
+import com.cpy.constant.UserConstant;
 import com.cpy.exception.BusinessException;
 import com.cpy.main.service.InterfaceInformationService;
 import com.cpy.model.dto.interfaceInfo.*;
@@ -14,7 +16,9 @@ import com.cpy.model.entity.User;
 import com.cpy.utils.ApiClient;
 import com.cpy.utils.IsUser;
 import com.cpy.utils.VerifyUtils;
-import com.sun.deploy.net.URLEncoder;
+import java.net.URLEncoder;
+
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -38,6 +42,8 @@ import static com.cpy.constant.UserConstant.USER_LOGIN_STATE;
 public class InterfaceInformationController {
     @Resource
     InterfaceInformationService interfaceInformationService;
+    @Resource
+    private StringRedisTemplate stringRedisTemplate;
     @PostMapping("/add")
     public BaseResponse<Boolean> add(@RequestBody InterfaceInformationAddRequest addRequest, HttpServletRequest request){
         //校验数据是否为空
@@ -78,6 +84,8 @@ public class InterfaceInformationController {
         if (!b){
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
              }
+        //删除缓存
+        stringRedisTemplate.delete(InterfaceInfoConstant.CACHE_INTERFACE_INFO_KEY+deleteRequest.getId());
         return ResultUtils.success(true);
     }
     @GetMapping("/query/list")
@@ -139,6 +147,8 @@ public class InterfaceInformationController {
         if (!b){
             throw new BusinessException(ErrorCode.PARAMS_ERROR,"参数异常");
         }
+        //删除缓存
+        stringRedisTemplate.delete(InterfaceInfoConstant.CACHE_INTERFACE_INFO_KEY+updateRequest.getId());
         return ResultUtils.success(true);
     }
     @PostMapping("/online")
@@ -178,6 +188,8 @@ public class InterfaceInformationController {
         if (!b){
             throw new BusinessException(ErrorCode.PARAMS_ERROR,"参数异常");
         }
+        //删除缓存
+        stringRedisTemplate.delete(InterfaceInfoConstant.CACHE_INTERFACE_INFO_KEY+interfaceInformation.getId());
         return ResultUtils.success(true);
     }
     @PostMapping("/offline")
@@ -196,6 +208,8 @@ public class InterfaceInformationController {
         if (!b){
             throw new BusinessException(ErrorCode.PARAMS_ERROR,"参数异常");
         }
+        //删除缓存
+        stringRedisTemplate.delete(UserConstant.CACHE_USER_KEY+offlineRequest.getId());
         return ResultUtils.success(true);
     }
 
@@ -301,6 +315,8 @@ public class InterfaceInformationController {
         if (!b){
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
+        //删除缓存
+        stringRedisTemplate.delete(InterfaceInfoConstant.CACHE_INTERFACE_INFO_KEY+interfaceInformation.getId());
         return ResultUtils.success(true);
 
     }
@@ -335,7 +351,7 @@ public class InterfaceInformationController {
     @GetMapping("/get/interface")
     public BaseResponse<InterfaceInformation> getInterfaceInformationById(Long id){
         if (id<0||id==null)throw new BusinessException(ErrorCode.PARAMS_ERROR);
-        InterfaceInformation interfaceInformation = interfaceInformationService.getById(id);
+        InterfaceInformation interfaceInformation = interfaceInformationService.queryById(id);
         if (interfaceInformation==null)throw new BusinessException(ErrorCode.PARAMS_ERROR,"接口不存在");
         return ResultUtils.success(interfaceInformation);
     }

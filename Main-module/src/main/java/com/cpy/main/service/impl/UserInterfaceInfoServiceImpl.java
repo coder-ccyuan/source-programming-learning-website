@@ -1,8 +1,10 @@
 package com.cpy.main.service.impl;
 
+import cn.hutool.core.util.RandomUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.cpy.constant.UserInterfaceInfoConstant;
 import com.cpy.main.mapper.InterfaceInformationMapper;
 import com.cpy.main.mapper.UserInterfaceInfoMapper;
 import com.cpy.main.mapper.UserMapper;
@@ -12,9 +14,11 @@ import com.cpy.model.dto.userInterfaceIfo.UserInterfaceInfoUpdateRequest;
 import com.cpy.model.entity.InterfaceInformation;
 import com.cpy.model.entity.User;
 import com.cpy.model.entity.UserInterfaceInfo;
+import com.cpy.utils.RedisUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.concurrent.TimeUnit;
 
 /**
 * @author 成希德
@@ -28,6 +32,8 @@ public class UserInterfaceInfoServiceImpl extends ServiceImpl<UserInterfaceInfoM
     InterfaceInformationMapper interfaceInformationMapper;
     @Resource
     UserMapper userMapper;
+    @Resource
+    private RedisUtils redisUtils;
     @Override
     public UserInterfaceInfo verify(UserInterfaceInfoAddRequest addRequest) {
         //验证id
@@ -80,6 +86,12 @@ public class UserInterfaceInfoServiceImpl extends ServiceImpl<UserInterfaceInfoM
         userInterfaceInfo.setTotalNums(updateRequest.getTotalNums());
         userInterfaceInfo.setLeftNums(updateRequest.getLeftNums());
         userInterfaceInfo.setStatus(updateRequest.getStatus());
+        return userInterfaceInfo;
+    }
+
+    @Override
+    public UserInterfaceInfo queryById(Long id) {
+        UserInterfaceInfo userInterfaceInfo = redisUtils.queryWithPassThrough(UserInterfaceInfoConstant.CACHE_USER_INTERFACE_INFO_KEY, id, UserInterfaceInfo.class, this::getById, RandomUtil.randomLong(10000), TimeUnit.SECONDS);
         return userInterfaceInfo;
     }
 }

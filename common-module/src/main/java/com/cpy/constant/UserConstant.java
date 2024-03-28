@@ -7,6 +7,10 @@ package com.cpy.constant;
  * @from <a href="https://cpy.icu">编程导航知识星球</a>
  */
 public interface UserConstant {
+    /**
+     * 用户缓存键
+     */
+    String CACHE_USER_KEY="source_website:user";
 
     /**
      * 用户登录态键

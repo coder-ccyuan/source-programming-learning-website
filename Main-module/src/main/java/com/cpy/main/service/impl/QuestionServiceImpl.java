@@ -1,5 +1,6 @@
 package com.cpy.main.service.impl;
 
+import cn.hutool.core.util.RandomUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -15,6 +16,7 @@ import com.cpy.model.entity.Question;
 import com.cpy.model.entity.User;
 import com.cpy.model.vo.QuestionVO;
 import com.cpy.model.vo.UserVO;
+import com.cpy.utils.RedisUtils;
 import com.cpy.utils.SqlUtils;
 import com.google.gson.Gson;
 import org.apache.commons.collections4.CollectionUtils;
@@ -34,7 +36,10 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+
+import static com.cpy.constant.QuestionConstant.CACHE_QUESTION_KEY;
 
 /**
 * @author 成希德
@@ -51,6 +56,8 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question>
 
     @Resource
     private ElasticsearchRestTemplate elasticsearchRestTemplate;
+    @Resource
+    private RedisUtils redisUtils;
 
     @Override
     public void validQuestion(Question question, boolean add) {
@@ -293,6 +300,11 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question>
         return questionVOPage;
     }
 
+    @Override
+    public Question queryById(Long id) {
+        Question question = redisUtils.queryWithPassThrough(CACHE_QUESTION_KEY, id, Question.class, this::getById, RandomUtil.randomLong(100000), TimeUnit.SECONDS);
+        return question;
+    }
 }
 
 

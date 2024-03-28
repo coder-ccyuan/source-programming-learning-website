@@ -5,6 +5,9 @@ import com.cpy.common.BaseResponse;
 import com.cpy.common.DeleteRequest;
 import com.cpy.common.ErrorCode;
 import com.cpy.common.ResultUtils;
+import com.cpy.constant.InterfaceInfoConstant;
+import com.cpy.constant.UserConstant;
+import com.cpy.constant.UserInterfaceInfoConstant;
 import com.cpy.exception.BusinessException;
 import com.cpy.main.service.UserInterfaceInfoService;
 import com.cpy.model.dto.userInterfaceIfo.UserInterfaceInfoAddRequest;
@@ -12,6 +15,7 @@ import com.cpy.model.dto.userInterfaceIfo.UserInterfaceInfoQueryRequest;
 import com.cpy.model.dto.userInterfaceIfo.UserInterfaceInfoUpdateRequest;
 import com.cpy.model.entity.UserInterfaceInfo;
 import com.cpy.utils.IsUser;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -23,6 +27,8 @@ import java.util.List;
 public class userInterfaceInfoController {
     @Resource
     UserInterfaceInfoService userInterfaceInfoService;
+    @Resource
+    private StringRedisTemplate stringRedisTemplate;
     @PostMapping("/add")
     public BaseResponse<Boolean> add(@RequestBody UserInterfaceInfoAddRequest addRequest, HttpServletRequest request){
         //校验数据是否为空
@@ -39,7 +45,6 @@ public class userInterfaceInfoController {
         if (userInterfaceInfo == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "请求参数不符合格式或api名字重复");
         }
-
 
         Boolean save = userInterfaceInfoService.save(userInterfaceInfo);
         return ResultUtils.success(save);
@@ -63,7 +68,9 @@ public class userInterfaceInfoController {
         if (!b){
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        return ResultUtils.success(b);
+        //删除缓存
+        stringRedisTemplate.delete(UserInterfaceInfoConstant.CACHE_USER_INTERFACE_INFO_KEY +deleteRequest.getId());
+        return ResultUtils.success(true);
     }
     @GetMapping("/query")
     public BaseResponse<List<UserInterfaceInfo>> query(UserInterfaceInfoQueryRequest queryRequest, HttpServletRequest request){
@@ -102,6 +109,8 @@ public class userInterfaceInfoController {
         }
         //更新
         boolean b = userInterfaceInfoService.updateById(userInterfaceInfo);
+        //删除缓存
+        stringRedisTemplate.delete(UserInterfaceInfoConstant.CACHE_USER_INTERFACE_INFO_KEY+updateRequest.getId());
         return ResultUtils.success(b);
     }
 }

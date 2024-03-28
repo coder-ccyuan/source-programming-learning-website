@@ -50,8 +50,8 @@ public class NativeJavaSandbox implements CodeSandBox {
             throw new RuntimeException(e);
         }
         //执行代码
-        String exeCmd = String.format("java -Xmx256m -cp %s;%s -Djava.security.manager=MySecurityManager Main", userCodeParentPath,MY_SECURITY_MANAGER);
-//        String exeCmd = String.format("java -Xmx256m -cp %s Main", userCodeParentPath);
+//        String exeCmd = String.format("java -Xmx256m -cp %s;%s -Djava.security.manager=MySecurityManager Main", userCodeParentPath,MY_SECURITY_MANAGER);
+        String exeCmd = String.format("java -Xmx256m -cp %s Main", userCodeParentPath);
         System.out.println(exeCmd);
         try {
             SandboxUtils.runCode(input, executeCodeResponse,exeCmd);

@@ -1,17 +1,21 @@
 package com.cpy.main.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.util.RandomUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.cpy.constant.InterfaceInfoConstant;
 import com.cpy.main.mapper.InterfaceInformationMapper;
 import com.cpy.main.service.InterfaceInformationService;
 import com.cpy.model.dto.interfaceInfo.InterfaceInformationAddRequest;
 import com.cpy.model.dto.interfaceInfo.InterfaceInformationUpdateRequest;
 import com.cpy.model.entity.InterfaceInformation;
+import com.cpy.utils.RedisUtils;
 import com.cpy.utils.VerifyUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.concurrent.TimeUnit;
 
 /**
 * @author 成希德
@@ -23,7 +27,8 @@ public class InterfaceInformationServiceImpl extends ServiceImpl<InterfaceInform
     implements InterfaceInformationService {
     @Resource
     InterfaceInformationMapper interfaceInformationMapper;
-
+    @Resource
+    private RedisUtils redisUtils;
     /**
      *
      * @param addRequest
@@ -92,6 +97,12 @@ public class InterfaceInformationServiceImpl extends ServiceImpl<InterfaceInform
         //返回数据
         InterfaceInformation interfaceInformation = new InterfaceInformation();
         BeanUtil.copyProperties(updateRequest,interfaceInformation);
+        return interfaceInformation;
+    }
+
+    @Override
+    public InterfaceInformation queryById(Long id) {
+        InterfaceInformation interfaceInformation = redisUtils.queryWithPassThrough(InterfaceInfoConstant.CACHE_INTERFACE_INFO_KEY, id, InterfaceInformation.class, this::getById, RandomUtil.randomLong(10000), TimeUnit.SECONDS);
         return interfaceInformation;
     }
 }

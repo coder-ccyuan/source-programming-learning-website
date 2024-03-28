@@ -120,5 +120,8 @@ public interface UserService extends IService<User> {
      * @return
      */
     QueryWrapper<User> getQueryWrapper(UserQueryRequest userQueryRequest);
-
+    /**
+     * 通过Id查询redis缓存
+     */
+    User queryById(Long id);
 }

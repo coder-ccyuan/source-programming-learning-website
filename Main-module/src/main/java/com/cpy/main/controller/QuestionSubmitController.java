@@ -14,9 +14,11 @@ import com.cpy.model.vo.QuestionSubmitVO;
 import com.cpy.main.service.QuestionSubmitService;
 import com.cpy.main.service.UserService;
 import com.cpy.model.entity.User;
+import com.cpy.utils.RedisUtils;
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -38,6 +40,10 @@ public class QuestionSubmitController {
 
     @Resource
     private UserService userService;
+    @Resource
+    private StringRedisTemplate stringRedisTemplate;
+    @Resource
+    private RedisUtils redisUtils;
 
     private final static Gson GSON = new Gson();
 
